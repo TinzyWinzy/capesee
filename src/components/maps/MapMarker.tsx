@@ -1,6 +1,8 @@
 import { CATEGORIES } from '@/lib/constants'
 
-const TONE: Record<(typeof CATEGORIES)[number], string> = {
+export type MapCategory = (typeof CATEGORIES)[number]
+
+export const TONE: Record<MapCategory, string> = {
   Place: 'map-pin-place',
   'Historical site': 'map-pin-history',
   'Traveler discovery': 'map-pin-discovery',
@@ -12,7 +14,7 @@ const TONE: Record<(typeof CATEGORIES)[number], string> = {
   Event: 'map-pin-gold',
 }
 
-const ICON: Record<(typeof CATEGORIES)[number], string> = {
+export const ICON: Record<MapCategory, string> = {
   Place: '⌖',
   'Historical site': '◈',
   'Traveler discovery': '✶',
@@ -33,7 +35,7 @@ export function MapMarker({
   active,
   onClick,
 }: {
-  category: (typeof CATEGORIES)[number]
+  category: MapCategory
   x: number
   y: number
   label?: string

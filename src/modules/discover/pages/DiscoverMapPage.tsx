@@ -2,10 +2,9 @@ import { useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Button, FilterDrawer, useFilterDrawer } from '@/components/ui'
 import { MapSurface } from '@/components/maps/MapSurface'
-import { MapMarker } from '@/components/maps/MapMarker'
-import { MapCluster } from '@/components/maps/MapCluster'
 import { useMapMarkers, type MapMarkerData } from '@/modules/maps/hooks/useMapMarkers'
 import { distanceLabel } from '@/lib/format'
+import { haversineKm, type LatLng } from '@/lib/geo'
 
 const FILTERS = ['All', 'Places', 'History', 'Wildlife', 'Food'] as const
 type MapFilter = (typeof FILTERS)[number]
@@ -17,15 +16,20 @@ const FILTER_CATEGORIES: Record<Exclude<MapFilter, 'All'>, Set<MapMarkerData['ca
   Food: new Set(['Food']),
 }
 
-/** T02 — Capesee's primary discovery surface. Works with mock projection until Mapbox is configured. */
+/** Cluster anchor and the radius it groups — around Table Mountain, where the bowl and gardens sit. */
+const CLUSTER_ANCHOR: LatLng = { lat: -33.9622, lng: 18.4098 }
+const CLUSTER_RADIUS_KM = 8
+
+/** T02 — Capesee's primary discovery surface. Markers are pinned to real lat/lng. */
 export function DiscoverMapPage() {
   const markers = useMapMarkers()
   const filters = useFilterDrawer()
   const [activeFilter, setActiveFilter] = useState<MapFilter>('All')
-  const [radiusKm, setRadiusKm] = useState(5)
+  const [radiusKm, setRadiusKm] = useState(10)
   const [query, setQuery] = useState('')
   const [selectedId, setSelectedId] = useState(markers[0]?.id ?? '')
   const [locationState, setLocationState] = useState<'idle' | 'locating' | 'located' | 'unavailable'>('idle')
+  const [userLocation, setUserLocation] = useState<LatLng | null>(null)
   const [areaLabel, setAreaLabel] = useState('Cape Town bowl')
 
   const visibleMarkers = useMemo(() => {
@@ -40,6 +44,13 @@ export function DiscoverMapPage() {
 
   const selected = visibleMarkers.find((marker) => marker.id === selectedId) ?? visibleMarkers[0]
 
+  const cluster = useMemo(() => {
+    const nearby = visibleMarkers.filter((marker) => haversineKm(CLUSTER_ANCHOR, marker) <= CLUSTER_RADIUS_KM)
+    return nearby.length >= 2
+      ? { lat: CLUSTER_ANCHOR.lat, lng: CLUSTER_ANCHOR.lng, count: nearby.length, onClick: () => setRadiusKm(CLUSTER_RADIUS_KM) }
+      : undefined
+  }, [visibleMarkers])
+
   const requestLocation = () => {
     if (!navigator.geolocation) {
       setLocationState('unavailable')
@@ -47,7 +58,8 @@ export function DiscoverMapPage() {
     }
     setLocationState('locating')
     navigator.geolocation.getCurrentPosition(
-      () => {
+      (position) => {
+        setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude })
         setLocationState('located')
         setAreaLabel('Around your location')
       },
@@ -76,24 +88,23 @@ export function DiscoverMapPage() {
 
       <div className="map-workspace">
         <section className="map-stage" aria-label="Interactive discovery map">
-          <MapSurface className="map-full-canvas" myLocation={locationState === 'located' ? { x: 52, y: 62 } : undefined}>
+          <MapSurface
+            className="map-full-canvas"
+            markers={visibleMarkers.map((marker) => ({
+              id: marker.id,
+              lat: marker.lat,
+              lng: marker.lng,
+              category: marker.category,
+              label: marker.label,
+              active: selected?.id === marker.id,
+              onClick: () => setSelectedId(marker.id),
+            }))}
+            cluster={cluster}
+            myLocation={userLocation ?? undefined}
+          >
             <div className="map-water-label" aria-hidden>TABLE BAY</div>
             <div className="map-place-label map-place-label-one" aria-hidden>CITY BOWL</div>
             <div className="map-place-label map-place-label-two" aria-hidden>TABLE MOUNTAIN</div>
-            {visibleMarkers.map((marker) => (
-              <MapMarker
-                key={marker.id}
-                category={marker.category}
-                x={marker.x}
-                y={marker.y}
-                label={marker.label}
-                active={selected?.id === marker.id}
-                onClick={() => setSelectedId(marker.id)}
-              />
-            ))}
-            {activeFilter === 'All' && radiusKm >= 5 ? (
-              <MapCluster count={17} x={52} y={43} onClick={() => setRadiusKm(2)} />
-            ) : null}
           </MapSurface>
 
           <div className="map-stage-top">

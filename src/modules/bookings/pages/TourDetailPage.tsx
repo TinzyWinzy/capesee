@@ -3,7 +3,6 @@ import { Link, useNavigate } from '@tanstack/react-router'
 import type { BookableProduct } from '@/types'
 import { Badge, DatePicker, GuestSelector, RatingDisplay } from '@/components/ui'
 import { MapSurface } from '@/components/maps/MapSurface'
-import { MapMarker } from '@/components/maps/MapMarker'
 import { formatRand } from '@/lib/format'
 import { useCartStore } from '@/stores/cart'
 
@@ -79,14 +78,14 @@ export function TourDetailPage({ tour }: { tour: BookableProduct }) {
               <div><p className="eyebrow">Route context</p><h2>Across the Western Cape</h2></div>
               <Link to="/discover/map" className="editorial-link">Explore map →</Link>
             </div>
-            <MapSurface className="tour-route-map">
-              <span className="tour-route-label route-start">Start</span>
-              <span className="tour-route-label route-middle">Experience</span>
-              <span className="tour-route-label route-end">Return</span>
-              <MapMarker category="Tour" x={24} y={62} />
-              <MapMarker category="Place" x={52} y={34} />
-              <MapMarker category="Tour" x={79} y={58} />
-            </MapSurface>
+            <MapSurface
+              className="tour-route-map"
+              markers={[
+                { id: 'route-start', category: 'Tour', lat: -33.9057, lng: 18.4203, label: 'Start' },
+                { id: 'route-mid', category: 'Place', lat: -33.9518, lng: 18.3813, label: 'Experience' },
+                { id: 'route-end', category: 'Tour', lat: -34.1897, lng: 18.4319, label: 'Return' },
+              ]}
+            />
           </section>
 
           <section className="tour-assurance">

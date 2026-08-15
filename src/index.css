@@ -470,8 +470,11 @@ p {
 .discover-hero {
   position: relative;
   isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-height: min(760px, calc(100svh - 64px));
-  padding: clamp(64px, 9vw, 120px) 16px 0;
+  padding: clamp(64px, 9vw, 120px) clamp(16px, 6vw, 96px) 56px;
   color: var(--color-cream);
   background:
     radial-gradient(1150px 600px at 84% -12%, color-mix(in srgb, var(--color-brass) 17%, transparent), transparent 60%),
@@ -579,29 +582,6 @@ p {
   text-transform: uppercase;
 }
 
-.discover-regions { display: flex; gap: 10px 20px; flex-wrap: wrap; align-items: center; margin-top: 24px; }
-.discover-regions > .text-xs { font: 700 9.5px var(--font-mono); letter-spacing: .18em; text-transform: uppercase; }
-.discover-regions a {
-  font-size: 13px;
-  font-weight: 650;
-  color: color-mix(in srgb, var(--color-cream) 90%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-cream) 30%, transparent);
-  padding-bottom: 2px;
-}
-.discover-regions a span { color: var(--color-flame); margin-left: 4px; }
-
-.expedition-rule { display: flex; align-items: center; gap: 12px; margin-top: 34px; max-width: 560px; }
-.expedition-rule .hairline { flex: 1; height: 1px; }
-.expedition-rule .hairline.l { background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-cream) 34%, transparent)); }
-.expedition-rule .hairline.r { background: linear-gradient(90deg, color-mix(in srgb, var(--color-cream) 34%, transparent), transparent); }
-.expedition-rule .diamond { width: 7px; height: 7px; transform: rotate(45deg); background: var(--color-brass); flex: none; }
-.expedition-rule .coord { font: 600 9.5px var(--font-mono); letter-spacing: .26em; color: color-mix(in srgb, var(--color-cream) 58%, transparent); white-space: nowrap; }
-
-.discover-field-index { margin: 24px 0 0; display: flex; gap: 30px; }
-.discover-field-index div { display: grid; grid-template-columns: auto auto; align-items: baseline; gap: 8px; }
-.discover-field-index dt { color: var(--color-flame); font: 700 10px var(--font-mono); }
-.discover-field-index dd { margin: 0; color: color-mix(in srgb, var(--color-cream) 72%, transparent); font: 600 9.5px var(--font-mono); text-transform: uppercase; letter-spacing: .14em; }
-
 .discover-map-feature {
   position: relative;
   display: block;
@@ -633,6 +613,138 @@ p {
   transform: rotate(-2deg);
 }
 .live-stamp .live-dot { width: 6px; height: 6px; background: var(--color-brass); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brass) 22%, transparent); }
+
+/* ---------- Landing: about / map section / footer ---------- */
+
+.about-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, .65fr);
+  gap: 56px;
+  align-items: start;
+}
+.about-copy .discover-section-heading { margin-bottom: 20px; }
+.about-copy > p {
+  max-width: 660px;
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 16px;
+  line-height: 1.7;
+}
+.about-pillars {
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  border-top: 1px solid var(--color-line);
+}
+.about-pillars li { padding-top: 16px; display: grid; gap: 5px; align-content: start; }
+.about-pillars li span { color: var(--color-flame); font: 700 10px var(--font-mono); letter-spacing: .1em; }
+.about-pillars strong { font-family: var(--font-display); font-size: 18px; font-weight: 560; }
+.about-pillars small { color: var(--color-ink-muted); font-size: 12.5px; line-height: 1.5; }
+.about-note-card {
+  position: relative;
+  padding: 28px;
+  color: var(--color-cream);
+  background:
+    radial-gradient(340px 240px at 100% 0%, color-mix(in srgb, var(--color-brass) 14%, transparent), transparent 60%),
+    var(--color-ink-deep);
+  border: 1px solid color-mix(in srgb, var(--color-brass) 36%, transparent);
+  border-radius: 20px 20px 52px 20px;
+  box-shadow: 0 26px 60px rgba(11, 33, 30, .24);
+}
+.about-note-card .eyebrow {
+  margin: 0 0 14px;
+  color: var(--color-brass);
+  font: 700 10px var(--font-mono);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.about-note-card blockquote {
+  margin: 0 0 24px;
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.4;
+}
+.about-note-coord {
+  display: block;
+  font: 600 9.5px var(--font-mono);
+  letter-spacing: .26em;
+  color: color-mix(in srgb, var(--color-cream) 55%, transparent);
+}
+
+.map-section .discover-map-feature { margin-top: 0; }
+
+.site-footer {
+  padding: 64px 16px 44px;
+  color: var(--color-cream);
+  background:
+    radial-gradient(720px 320px at 18% -10%, color-mix(in srgb, var(--color-flame) 9%, transparent), transparent 62%),
+    var(--color-ink-deep);
+  border-top: 1px solid color-mix(in srgb, var(--color-brass) 26%, transparent);
+}
+.site-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.7fr 1fr 1fr 1fr;
+  gap: 40px;
+}
+.site-footer .brand { color: var(--color-cream); font-weight: 850; letter-spacing: .04em; }
+.site-footer .brand span { color: var(--color-flame); }
+.site-footer-brand p {
+  max-width: 320px;
+  margin: 16px 0 0;
+  color: color-mix(in srgb, var(--color-cream) 62%, transparent);
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+.site-footer-col { display: grid; gap: 10px; align-content: start; }
+.site-footer-col strong {
+  margin-bottom: 6px;
+  color: var(--color-brass);
+  font: 700 10px var(--font-mono);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.site-footer-col a {
+  width: fit-content;
+  color: color-mix(in srgb, var(--color-cream) 84%, transparent);
+  font-size: 13px;
+  border-bottom: 1px solid transparent;
+}
+.site-footer-col a:hover { color: var(--color-flame); border-color: color-mix(in srgb, var(--color-flame) 40%, transparent); }
+.site-footer-rule {
+  max-width: 1200px;
+  margin: 52px auto 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.site-footer-rule .hairline { flex: 1; height: 1px; background: color-mix(in srgb, var(--color-cream) 16%, transparent); }
+.site-footer-rule .diamond { width: 7px; height: 7px; transform: rotate(45deg); background: var(--color-brass); flex: none; }
+.site-footer-rule .coord { font: 600 9.5px var(--font-mono); letter-spacing: .26em; color: color-mix(in srgb, var(--color-cream) 55%, transparent); white-space: nowrap; }
+.site-footer-legal {
+  max-width: 1200px;
+  margin: 16px auto 0;
+  text-align: center;
+  color: color-mix(in srgb, var(--color-cream) 45%, transparent);
+  font: 600 9.5px var(--font-mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 767px) {
+  .about-layout { grid-template-columns: 1fr; gap: 28px; }
+  .about-pillars { grid-template-columns: 1fr; gap: 18px; }
+  .about-copy > p { font-size: 15px; }
+  .site-footer { padding: 48px 16px 40px; }
+  .site-footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .site-footer-brand { grid-column: 1 / -1; }
+}
 
 .discover-content { border-top: 1px solid var(--color-line); background: var(--color-bg); }
 .discover-section { max-width: 1200px; margin: 0 auto; padding: 52px 16px; }
@@ -679,7 +791,6 @@ p {
   .discover-mobile-brand { display: flex !important; margin-bottom: 52px; }
   .discover-hero h1 { font-size: clamp(45px, 14vw, 62px); }
   .discover-intro { font-size: 15px; margin: 18px 0 22px; }
-  .discover-regions { margin-bottom: 28px; }
   .discover-map-feature { border-radius: 16px 16px 38px 16px; padding: 8px; }
   .discover-map-canvas { min-height: 300px !important; border-radius: 10px 10px 32px 10px; }
   .discover-map-heading { padding: 9px 7px 13px; }
@@ -839,8 +950,6 @@ p {
   .discover-primary-actions { align-items: stretch; flex-direction: column; gap: 14px; }
   .discover-primary-actions .btn { width: 100%; }
   .discover-text-action { justify-content: center; min-height: 42px; }
-  .discover-field-index { margin-top: 32px; gap: 15px; overflow-x: auto; }
-  .discover-field-index div { min-width: max-content; }
   .discover-map-feature { margin-top: 40px; }
   .discover-map-canvas { min-height: 315px !important; }
   .editorial-card-body { min-height: 120px; }
@@ -980,6 +1089,42 @@ p {
 .map-surface-live > .map-pin,
 .map-surface-live > .map-cluster,
 .map-surface-live > .map-my-location { z-index: 1; }
+
+/* Live markers are anchored to real coordinates via AdvancedMarkerElement.
+   The anchor is a zero-size box whose bottom-center sits on the coordinate;
+   the teardrop tip hangs down to it and labels float above. */
+.map-marker-anchor {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: visible;
+}
+.map-marker-anchor .map-pin {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+  z-index: auto;
+}
+.map-marker-anchor .map-pin .pin-label {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  margin: 0 0 4px 0;
+}
+.map-marker-anchor .map-cluster,
+.map-marker-anchor .map-my-location {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+
+/* Real tiles already carry these labels — hide the mock decorations. */
+.map-surface-live .map-water-label,
+.map-surface-live .map-place-label,
+.map-surface-live .map-full-canvas::before,
+.map-surface-live .map-full-canvas::after { display: none; }
 
 .map-pin {
   position: absolute;

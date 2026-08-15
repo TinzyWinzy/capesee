@@ -1,6 +1,5 @@
 import { Link } from '@tanstack/react-router'
 import { MapSurface } from '@/components/maps/MapSurface'
-import { MapMarker } from '@/components/maps/MapMarker'
 import { getMyPins } from '@/modules/journal/api/journal'
 import { getPlaceById } from '@/lib/mock'
 import { CATEGORIES } from '@/lib/constants'
@@ -35,20 +34,25 @@ export function JournalMapPage() {
         <h1 className="section-title">Your Cape Map</h1>
       </div>
 
-      <MapSurface style={{ minHeight: 300, marginTop: 12 }} myLocation={{ x: 55, y: 70 }}>
-        {pinnedPlaces.slice(0, 6).map((place, index) => (
-          <MapMarker
-            key={place?.id}
-            category="Place"
-            x={25 + index * 12}
-            y={35 + index * 8}
-            label={place?.name}
-          />
-        ))}
-        {pins.slice(0, 3).map((pin, index) => (
-          <MapMarker key={pin.id} category={toMarkerCategory(pin.category)} x={30 + index * 22} y={55 + index * 5} label={pin.title} />
-        ))}
-      </MapSurface>
+      <MapSurface
+        style={{ minHeight: 300, marginTop: 12 }}
+        markers={[
+          ...pinnedPlaces.slice(0, 6).map((place) => ({
+            id: place?.id,
+            lat: place!.coordinates.lat,
+            lng: place!.coordinates.lng,
+            category: 'Place' as const,
+            label: place?.name,
+          })),
+          ...pins.slice(0, 3).map((pin) => ({
+            id: pin.id,
+            lat: pin.coordinates.lat,
+            lng: pin.coordinates.lng,
+            category: toMarkerCategory(pin.category),
+            label: pin.title,
+          })),
+        ]}
+      />
 
       <div className="grid-2" style={{ marginTop: 14 }}>
         {stats.map(([n, label]) => (

@@ -3,44 +3,48 @@ import { mockPlaces } from '@/lib/mock'
 import type { Pin } from '@/types'
 import { getNearbyDiscoveries } from '@/modules/discover/api/discoveries'
 import type { CATEGORIES } from '@/lib/constants'
+import { haversineKm } from '@/lib/geo'
+
+/** Reference point used for "distance from you" labels and the radius filter. */
+const CAPE_CENTER = { lat: -33.9249, lng: 18.4241 }
 
 export interface MapMarkerData {
   id: string
   category: (typeof CATEGORIES)[number]
   entityType: 'place' | 'discovery'
   slug?: string
-  x: number
-  y: number
+  lat: number
+  lng: number
   label: string
   context: string
   distanceMeters: number
   verified: boolean
 }
 
-/** Percent x/y marker positions for the mock map. Replace with lat/lng → Web Mercator projection when Mapbox lands. */
+/** Real lat/lng markers for the discovery map, with distances measured from Cape Town. */
 export function useMapMarkers(): MapMarkerData[] {
   return useMemo(() => {
-    const placeMarkers: MapMarkerData[] = mockPlaces.map((p, i) => ({
+    const placeMarkers: MapMarkerData[] = mockPlaces.map((p) => ({
       id: p.id,
       category: p.type === 'Historical Site' ? 'Historical site' : 'Place',
       entityType: 'place',
       slug: p.slug,
-      x: 20 + i * 22,
-      y: 30 + (i % 2) * 28,
+      lat: p.coordinates.lat,
+      lng: p.coordinates.lng,
       label: p.name,
       context: `${p.locationName} · ${p.type}`,
-      distanceMeters: 900 + i * 1250,
+      distanceMeters: Math.round(haversineKm(CAPE_CENTER, p.coordinates) * 1000),
       verified: p.verified,
     }))
-    const pinMarkers: MapMarkerData[] = (getNearbyDiscoveries() as Pin[]).map((pin, i) => ({
+    const pinMarkers: MapMarkerData[] = (getNearbyDiscoveries() as Pin[]).map((pin) => ({
       id: pin.id,
       category: pin.category === 'Wildlife' ? 'Wildlife' : pin.category === 'History' ? 'Historical site' : 'Food',
       entityType: 'discovery',
-      x: 15 + i * 18,
-      y: 55 + (i % 2) * 14,
+      lat: pin.coordinates.lat,
+      lng: pin.coordinates.lng,
       label: pin.title,
       context: `${pin.category} · ${pin.authorName}`,
-      distanceMeters: 340 + i * 860,
+      distanceMeters: Math.round(haversineKm(CAPE_CENTER, pin.coordinates) * 1000),
       verified: false,
     }))
     return [...placeMarkers, ...pinMarkers]

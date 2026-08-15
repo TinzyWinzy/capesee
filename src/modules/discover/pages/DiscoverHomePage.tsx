@@ -1,8 +1,6 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 import { DiscoveryCard, Icon, SearchBar, TourCard } from '@/components/ui'
 import { MapSurface } from '@/components/maps/MapSurface'
-import { MapMarker } from '@/components/maps/MapMarker'
-import { REGIONS } from '@/lib/constants'
 import { mockTours } from '@/lib/mock'
 import { getNearbyDiscoveries } from '@/modules/discover/api/discoveries'
 import { useAuthStore } from '@/stores/auth'
@@ -40,6 +38,12 @@ const STAMP = (
   </div>
 )
 
+const MAP_MARKERS: Array<{ id: string; category: 'Place' | 'Traveler discovery' | 'Historical site'; lat: number; lng: number; label: string }> = [
+  { id: 'home-wine', category: 'Place', lat: -33.9364, lng: 18.8616, label: 'Wine farm' },
+  { id: 'home-sighting', category: 'Traveler discovery', lat: -33.987, lng: 18.431, label: 'New sighting' },
+  { id: 'home-heritage', category: 'Historical site', lat: -33.9259, lng: 18.4277, label: 'Heritage' },
+]
+
 /** T01 — Landing / Discover Home. Wireframe spec §3. Bold Cape expedition. */
 export function DiscoverHomePage() {
   const navigate = useNavigate()
@@ -75,53 +79,54 @@ export function DiscoverHomePage() {
             <Link to="/discover/nearby" className="btn btn-flame">Explore nearby <Icon name="arrow" /></Link>
             <Link to="/discover/map" className="discover-text-action">Open the living map <Icon name="arrow" /></Link>
           </div>
-          <div className="discover-regions" aria-label="Explore by region">
-            <span className="text-xs text-faint">Explore</span>
-            {REGIONS.map((r) => (
-              <Link key={r.slug} to="/discover/regions/$regionSlug" params={{ regionSlug: r.slug }}>
-                {r.name}<span aria-hidden>↗</span>
-              </Link>
-            ))}
-          </div>
-          <div className="expedition-rule" aria-hidden>
-            <span className="hairline l" />
-            <span className="diamond" />
-            <span className="coord">34°00′S · 18°28′E</span>
-            <span className="hairline r" />
-          </div>
-          <dl className="discover-field-index" aria-label="What Capesee connects">
-            <div><dt>01</dt><dd>Place</dd></div>
-            <div><dt>02</dt><dd>Living reports</dd></div>
-            <div><dt>03</dt><dd>Local experience</dd></div>
-          </dl>
         </div>
-
-        <Link to="/discover/map" className="discover-map-feature" aria-label="Open the discovery map">
-          <div className="discover-map-heading">
-            <div>
-              <p className="eyebrow">Live discovery map</p>
-              <strong>What’s unfolding nearby</strong>
-            </div>
-            <span className="live-stamp"><span className="live-dot" aria-hidden />LIVE</span>
-          </div>
-          <MapSurface myLocation={{ x: 48, y: 74 }} className="discover-map-canvas">
-            <MapMarker category="Place" x={27} y={43} label="Wine farm" />
-            <MapMarker category="Traveler discovery" x={61} y={31} label="New sighting" />
-            <MapMarker category="Historical site" x={78} y={61} label="Heritage" />
-          </MapSurface>
-          <div className="discover-map-note">
-            <span className="live-dot" aria-hidden />
-            Traveler reports and verified places, updated as the Cape changes.
-            <span className="map-open-action">Open map <Icon name="arrow" /></span>
-          </div>
-        </Link>
       </section>
 
       <div className="discover-content">
+        <section className="discover-section experience-section booking-section">
+          <div className="discover-section-heading">
+            <div>
+              <p className="eyebrow">No. 01 — Book a local experience</p>
+              <h2>Experiences rooted in place</h2>
+            </div>
+            <Link to="/book/tours" className="editorial-link">Explore all <span aria-hidden>→</span></Link>
+          </div>
+          <div className="experience-layout">
+            {mockTours.slice(0, 2).map((tour) => <TourCard key={tour.id} tour={tour} />)}
+          </div>
+        </section>
+
+        <section className="discover-section about-section">
+          <div className="about-layout">
+            <div className="about-copy">
+              <div className="discover-section-heading">
+                <div>
+                  <p className="eyebrow">No. 02 — About us</p>
+                  <h2>A field guide, not a brochure.</h2>
+                </div>
+              </div>
+              <p>
+                Capesee is a living field guide to the Cape. Every place on the map is tied to the reports of people
+                who have been there and the experiences of locals who know it best — no postcards, no guesswork.
+              </p>
+              <ul className="about-pillars">
+                <li><span>01</span><strong>Place</strong><small>Verified places, every one source-backed</small></li>
+                <li><span>02</span><strong>Living reports</strong><small>Traveler discoveries, dated and real</small></li>
+                <li><span>03</span><strong>Local experience</strong><small>Bookable experiences rooted in place</small></li>
+              </ul>
+            </div>
+            <aside className="about-note-card">
+              <p className="eyebrow">Field note · Est. 2026</p>
+              <blockquote>“Built for travellers who want the real Cape — the one the postcards never show.”</blockquote>
+              <span className="about-note-coord">34°00′S · 18°28′E</span>
+            </aside>
+          </div>
+        </section>
+
         <section className="discover-section nearby-section">
           <div className="discover-section-heading">
             <div>
-              <p className="eyebrow">No. 01 — From the field</p>
+              <p className="eyebrow">No. 03 — From the field</p>
               <h2>Happening near you</h2>
             </div>
             <Link to="/discover/nearby" className="editorial-link">View nearby <span aria-hidden>→</span></Link>
@@ -136,20 +141,69 @@ export function DiscoverHomePage() {
             </Link>
           </div>
         </section>
-
-        <section className="discover-section experience-section">
-          <div className="discover-section-heading">
-            <div>
-              <p className="eyebrow">No. 02 — Go deeper</p>
-              <h2>Experiences rooted in place</h2>
-            </div>
-            <Link to="/book/tours" className="editorial-link">Explore all <span aria-hidden>→</span></Link>
-          </div>
-          <div className="experience-layout">
-            {mockTours.slice(0, 2).map((tour) => <TourCard key={tour.id} tour={tour} />)}
-          </div>
-        </section>
       </div>
+
+      <section className="discover-section map-section">
+        <div className="discover-section-heading">
+          <div>
+            <p className="eyebrow">No. 04 — The living map</p>
+            <h2>The Cape, unfolding in real time</h2>
+          </div>
+          <Link to="/discover/map" className="editorial-link">Open map <span aria-hidden>→</span></Link>
+        </div>
+        <Link to="/discover/map" className="discover-map-feature" aria-label="Open the discovery map">
+          <div className="discover-map-heading">
+            <div>
+              <p className="eyebrow">Live discovery map</p>
+              <strong>What’s unfolding nearby</strong>
+            </div>
+            <span className="live-stamp"><span className="live-dot" aria-hidden />LIVE</span>
+          </div>
+          <MapSurface
+            className="discover-map-canvas"
+            markers={MAP_MARKERS}
+            myLocation={{ lat: -33.9057, lng: 18.4203 }}
+          />
+          <div className="discover-map-note">
+            <span className="live-dot" aria-hidden />
+            Traveler reports and verified places, updated as the Cape changes.
+            <span className="map-open-action">Open map <Icon name="arrow" /></span>
+          </div>
+        </Link>
+      </section>
+
+      <footer className="site-footer">
+        <div className="site-footer-inner">
+          <div className="site-footer-brand">
+            <Link to="/discover" className="brand">CAPE<span>SEE</span></Link>
+            <p>A living field guide to the Cape — follow real discoveries, source-backed stories and local experiences, all connected to place.</p>
+          </div>
+          <nav className="site-footer-col" aria-label="Discover">
+            <strong>Discover</strong>
+            <Link to="/discover/nearby">Explore nearby</Link>
+            <Link to="/discover/map">Living map</Link>
+            <Link to="/discover/search" search={{ q: '' }}>Search the Cape</Link>
+          </nav>
+          <nav className="site-footer-col" aria-label="Book">
+            <strong>Book</strong>
+            <Link to="/book/tours">Tours</Link>
+            <Link to="/book/experiences">Experiences</Link>
+            <Link to="/book/cart">Trip cart</Link>
+          </nav>
+          <nav className="site-footer-col" aria-label="Field">
+            <strong>Field</strong>
+            <Link to="/journal">Journal</Link>
+            <Link to={user ? '/account/profile' : '/auth/login'}>Profile</Link>
+          </nav>
+        </div>
+        <div className="site-footer-rule" aria-hidden>
+          <span className="hairline" />
+          <span className="diamond" />
+          <span className="coord">34°00′S · 18°28′E</span>
+          <span className="hairline" />
+        </div>
+        <p className="site-footer-legal">© 2026 Capesee · Field guide to the Cape · Made in the Cape</p>
+      </footer>
     </main>
   )
 }
