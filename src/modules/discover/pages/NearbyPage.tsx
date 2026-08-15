@@ -7,7 +7,7 @@ import { useState } from 'react'
 export function NearbyPage() {
   const [radiusKm, setRadiusKm] = useState(5)
   const [filter, setFilter] = useState<string | null>(null)
-  const pins = getNearbyDiscoveries().filter((p) => !filter || p.category === filter)
+  const pins = getNearbyDiscoveries(radiusKm * 1000).filter((p) => !filter || p.category === filter)
 
   return (
     <div className="page-narrow">
@@ -55,7 +55,7 @@ export function NearbyPage() {
             }
           />
         ) : (
-          pins.map((pin, i) => <DiscoveryCard key={pin.id} pin={pin} distanceMeters={650 + i * 550} />)
+          pins.map((pin) => <DiscoveryCard key={pin.id} pin={pin} />)
         )}
       </div>
     </div>

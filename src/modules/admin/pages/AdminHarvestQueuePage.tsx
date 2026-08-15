@@ -1,33 +1,50 @@
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
-import { Badge, Button, Card } from '@/components/ui'
+import { Badge, Card } from '@/components/ui'
 import { getClaims } from '@/modules/harvest/api/harvest'
 
-/** A07 — Harvest intelligence queue. Wireframe spec §33. */
+type HarvestTab = 'awaiting' | 'sources' | 'conflict'
+
+const TABS: { id: HarvestTab; label: string; status: string }[] = [
+  { id: 'awaiting', label: 'Awaiting Review', status: 'awaiting_review' },
+  { id: 'sources', label: 'Needs Sources', status: 'needs_sources' },
+  { id: 'conflict', label: 'Conflict', status: 'conflict' },
+]
+
+/** A07 — Harvest intelligence queue. Wireframe spec §33. Approve/reject mutations land in Sprint 4. */
 export function AdminHarvestQueuePage() {
-  const [tab, setTab] = useState<'awaiting' | 'sources' | 'conflict'>('awaiting')
+  const [tab, setTab] = useState<HarvestTab>('awaiting')
   const claims = getClaims()
+
+  const rows = claims.filter((c) => c.status === TABS.find((t) => t.id === tab)?.status)
 
   return (
     <div className="stack">
       <h1 className="section-title">HARVEST QUEUE</h1>
 
       <div className="row wrap">
-        <button className={tab === 'awaiting' ? 'chip chip-active' : 'chip'} onClick={() => setTab('awaiting')}>
-          Awaiting Review 14
-        </button>
-        <button className={tab === 'sources' ? 'chip chip-active' : 'chip'} onClick={() => setTab('sources')}>
-          Needs Sources 3
-        </button>
-        <button className={tab === 'conflict' ? 'chip chip-active' : 'chip'} onClick={() => setTab('conflict')}>
-          Conflict 2
-        </button>
+        {TABS.map((t) => {
+          const count = claims.filter((c) => c.status === t.status).length
+          return (
+            <button
+              key={t.id}
+              className={tab === t.id ? 'chip chip-active' : 'chip'}
+              onClick={() => setTab(t.id)}
+              aria-pressed={tab === t.id}
+            >
+              {t.label} {count}
+            </button>
+          )
+        })}
       </div>
 
-      <div className="stack">
-        {claims
-          .filter((c) => (tab === 'awaiting' ? c.status === 'awaiting_review' : tab === 'sources' ? c.status === 'needs_sources' : c.status === 'conflict'))
-          .map((claim) => (
+      {rows.length === 0 ? (
+        <Card>
+          <p className="text-faint text-small">Nothing in this queue.</p>
+        </Card>
+      ) : (
+        <div className="stack">
+          {rows.map((claim) => (
             <Card key={claim.id} className="stack">
               <span className="eyebrow">{claim.placeName}</span>
               <p className="text-small" style={{ margin: 0 }}>
@@ -36,26 +53,15 @@ export function AdminHarvestQueuePage() {
               <div className="row wrap">
                 <Badge tone="gold">Confidence {claim.confidence}%</Badge>
                 <Badge tone="info">Evidence agreement {claim.sourceAgreement}</Badge>
+                <Badge tone="default">{claim.sourceCount} sources</Badge>
               </div>
-              <div className="row wrap">
-                <Link to="/admin/harvest/$claimId" params={{ claimId: claim.id }}>
-                  <Button variant="outline" size="sm">
-                    View Evidence
-                  </Button>
-                </Link>
-                <Button variant="primary" size="sm">
-                  Approve
-                </Button>
-                <Button variant="ghost" size="sm">
-                  Edit
-                </Button>
-                <Button variant="ghost" size="sm">
-                  Reject
-                </Button>
-              </div>
+              <Link to="/admin/harvest/$claimId" params={{ claimId: claim.id }} className="btn btn-outline btn-sm">
+                View Evidence
+              </Link>
             </Card>
           ))}
-      </div>
+        </div>
+      )}
     </div>
   )
 }

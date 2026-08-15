@@ -93,3 +93,23 @@ export async function fetchProduct(type: BookableType, slug: string): Promise<Bo
   const products = await fetchProducts(type)
   return products.find((product) => product.slug === slug)
 }
+
+export async function fetchProductRow(id: string): Promise<Tables<'products'> | null> {
+  const supabase = getSupabase()
+  if (!supabase) return null
+
+  const { data, error } = await supabase.from('products').select('*').eq('id', id).maybeSingle()
+  if (error) throw error
+  return data
+}
+
+export async function updateProduct(
+  id: string,
+  update: Pick<TablesUpdate<'products'>, 'title' | 'description' | 'price' | 'price_unit' | 'status'>,
+): Promise<void> {
+  const supabase = getSupabase()
+  if (!supabase) throw new Error('Supabase is required to manage live catalog items.')
+
+  const { error } = await supabase.from('products').update(update).eq('id', id)
+  if (error) throw error
+}

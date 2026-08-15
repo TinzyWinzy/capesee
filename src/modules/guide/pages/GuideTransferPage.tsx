@@ -1,11 +1,15 @@
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Button, Card } from '@/components/ui'
+import { getBookingById } from '@/modules/bookings/api/orders'
+import { formatDate } from '@/lib/format'
 
 /** G04 — Driver / transfer tracking. Wireframe spec §25. */
-export function GuideTransferPage() {
+export function GuideTransferPage({ bookingId }: { bookingId?: string }) {
   const [status, setStatus] = useState<'waiting' | 'onboard' | 'arrived'>('waiting')
   const [sharing, setSharing] = useState(false)
+  const booking = bookingId ? getBookingById(bookingId) : undefined
+  const travelerName = booking?.travelerName ?? 'Traveler'
 
   return (
     <div className="page-narrow">
@@ -13,14 +17,18 @@ export function GuideTransferPage() {
         <Link to="/guide/dashboard" className="btn btn-ghost btn-sm" aria-label="Back">
           ←
         </Link>
-        <h1 className="section-title">Airport Transfer</h1>
+        <h1 className="section-title">Transfer {booking?.code ?? ''}</h1>
       </div>
 
       <Card className="stack" style={{ marginTop: 14 }}>
-        <span className="bold text-small">Sarah Williams</span>
+        <span className="bold text-small">{travelerName}</span>
         <div className="row-between">
-          <span className="text-faint text-small">Destination</span>
-          <span className="text-small bold">Cape Grace Hotel</span>
+          <span className="text-faint text-small">Service date</span>
+          <span className="text-small bold">{booking ? formatDate(booking.dates.start) : '—'}</span>
+        </div>
+        <div className="row-between">
+          <span className="text-faint text-small">Guests</span>
+          <span className="text-small bold">{booking ? booking.items.reduce((sum, item) => sum + item.qty, 0) : '—'}</span>
         </div>
         <hr className="hairline" style={{ margin: '4px 0' }} />
         <div className="stack" style={{ gap: 6 }}>

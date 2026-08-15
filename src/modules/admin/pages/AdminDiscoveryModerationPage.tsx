@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Badge, Button, Card } from '@/components/ui'
 import { getModerationQueue, moderateDiscovery } from '@/modules/admin/api/moderation'
-import { getPlaceBySlug } from '@/lib/mock'
+import { getPlaceById } from '@/lib/mock'
 import { timeAgo } from '@/lib/format'
 
 /** A06 — Discovery moderation queue. Wireframe spec §32. */
@@ -38,7 +38,7 @@ export function AdminDiscoveryModerationPage() {
         </Card>
       ) : (
         queue.map((pin) => {
-          const place = pin.placeId ? getPlaceBySlug(pin.placeId) : undefined
+          const place = pin.placeId ? getPlaceById(pin.placeId) : undefined
           const state = decision[pin.id]
           return (
             <Card key={pin.id} className="stack">
@@ -56,10 +56,6 @@ export function AdminDiscoveryModerationPage() {
                 <span className="text-faint text-xs">AI classification</span>
                 <span className="text-small">{pin.category}</span>
               </div>
-              <div className="row-between">
-                <span className="text-faint text-xs">Possible issue</span>
-                <span className="badge badge-gold">Species confidence 63%</span>
-              </div>
 
               {state ? (
                 <Badge tone={state === 'approved' ? 'success' : 'danger'}>
@@ -73,14 +69,6 @@ export function AdminDiscoveryModerationPage() {
                   <Button variant="outline" size="sm" disabled={busyId === pin.id} onClick={() => void decide(pin.id, 'rejected')}>
                     Reject
                   </Button>
-                  <Button variant="ghost" size="sm">
-                    Edit
-                  </Button>
-                  {place ? (
-                    <Button variant="ghost" size="sm">
-                      Open Place
-                    </Button>
-                  ) : null}
                 </div>
               )}
             </Card>

@@ -1,12 +1,15 @@
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { Pin } from '@/types'
-import { Button, TravelerReportBadge } from '@/components/ui'
-import { getPlaceBySlug } from '@/lib/mock'
+import { TravelerReportBadge } from '@/components/ui'
+import { getPlaceById } from '@/lib/mock'
 import { timeAgo } from '@/lib/format'
 
-/** T08 — Pin detail. Wireframe spec §10. */
+/** T08 — Pin detail. Wireframe spec §10. Likes toggle locally until social actions land. */
 export function PinDetailPage({ pin }: { pin: Pin }) {
-  const place = pin.placeId ? getPlaceBySlug(pin.placeId) : undefined
+  const place = pin.placeId ? getPlaceById(pin.placeId) : undefined
+  const [liked, setLiked] = useState(false)
+  const likeCount = pin.likes + (liked ? 1 : 0)
 
   return (
     <div className="page-narrow">
@@ -17,7 +20,9 @@ export function PinDetailPage({ pin }: { pin: Pin }) {
         <h1 className="section-title">Discovery</h1>
       </div>
 
-      <div className="media ratio-4-3">{pin.photoUrl ? <img src={pin.photoUrl} alt={pin.title} /> : <span>{pin.title}</span>}</div>
+      <div className="media ratio-4-3 media-fallback">
+        {pin.photoUrl ? <img src={pin.photoUrl} alt={pin.title} /> : <span>{pin.title}</span>}
+      </div>
 
       <div className="stack" style={{ marginTop: 14 }}>
         <h2 className="section-title" style={{ fontSize: 18 }}>
@@ -31,7 +36,7 @@ export function PinDetailPage({ pin }: { pin: Pin }) {
         </div>
 
         <div className="badge badge-ink" style={{ alignSelf: 'flex-start' }}>
-          📍 {place?.name ?? 'Unmapped location'}
+          <span aria-hidden>◉</span> {place?.name ?? 'Unmapped location'}
         </div>
 
         {pin.description ? <p className="text-muted text-small">{pin.description}</p> : null}
@@ -40,18 +45,24 @@ export function PinDetailPage({ pin }: { pin: Pin }) {
           <div className="card">
             <div className="eyebrow">Capesee context</div>
             <p className="text-small text-muted">This observation happened near {place.name}. Read its history and other discoveries.</p>
-            <Link to="/discover/places/$placeSlug" params={{ placeSlug: place.slug }}>
-              <Button variant="outline" size="sm" style={{ marginTop: 8 }}>
-                Explore place
-              </Button>
+            <Link to="/discover/places/$placeSlug" params={{ placeSlug: place.slug }} className="btn btn-outline btn-sm" style={{ marginTop: 8 }}>
+              Explore place
             </Link>
           </div>
         ) : null}
 
         <div className="row">
-          <Button variant="ghost" size="sm">♡ {pin.likes}</Button>
-          <Button variant="ghost" size="sm">💬 {pin.comments}</Button>
-          <Button variant="ghost" size="sm">Share</Button>
+          <button
+            type="button"
+            className={liked ? 'chip chip-active' : 'chip'}
+            onClick={() => setLiked((value) => !value)}
+            aria-pressed={liked}
+          >
+            ♡ {likeCount} {liked ? '· liked' : ''}
+          </button>
+          <span className="text-faint text-xs" style={{ alignSelf: 'center' }}>
+            {pin.comments} comments · reactions and replies ship with social actions
+          </span>
         </div>
       </div>
     </div>

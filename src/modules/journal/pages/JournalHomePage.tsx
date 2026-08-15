@@ -7,6 +7,10 @@ import { getMyPins } from '@/modules/journal/api/journal'
 export function JournalHomePage() {
   const [view, setView] = useState<'timeline' | 'map'>('timeline')
   const pins = getMyPins()
+  const latest = pins[0]?.createdAt
+  const periodLabel = latest
+    ? new Date(latest).toLocaleString('en-ZA', { month: 'short', year: 'numeric' }).toUpperCase()
+    : 'YOUR REPORTS'
 
   return (
     <div className="page-narrow">
@@ -40,7 +44,7 @@ export function JournalHomePage() {
         </Link>
       ) : (
         <div className="stack" style={{ gap: 14 }}>
-          <div className="eyebrow">AUG 2026</div>
+          <div className="eyebrow">{periodLabel}</div>
           {pins.map((pin) => (
             <DiscoveryCard key={pin.id} pin={pin} showBadge={false} />
           ))}

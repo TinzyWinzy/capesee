@@ -25,11 +25,14 @@ export function DesktopNavigation() {
           CAPE<span>SEE</span>
         </Link>
         <nav className="nav-links desktop-only">
-          {LINKS.map((link) => (
-            <Link key={link.to} to={link.to} className={isActive(link.to) ? 'active' : ''}>
-              {link.label}
-            </Link>
-          ))}
+          {LINKS.map((link) => {
+            const active = isActive(link.to)
+            return (
+              <Link key={link.to} to={link.to} className={active ? 'active' : ''} aria-current={active ? 'page' : undefined}>
+                {link.label}
+              </Link>
+            )
+          })}
         </nav>
         <div className="spacer" />
         <Link to="/discover/search" search={{ q: '' }} className="nav-icon-button" aria-label="Search Capesee">

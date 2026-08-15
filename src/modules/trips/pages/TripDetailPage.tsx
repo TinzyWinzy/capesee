@@ -1,10 +1,34 @@
+import { useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { Booking } from '@/types'
-import { Badge, Button, Card } from '@/components/ui'
+import { Badge, Card } from '@/components/ui'
 import { formatDate } from '@/lib/format'
+import { getProducts } from '@/modules/bookings/api/products'
 
-/** T15 — Trip detail: today/tomorrow schedule, offline ticket, emergency support. Wireframe spec §17. */
+/** T15 — Trip detail: the booking's confirmed items, offline ticket, emergency support. Wireframe spec §17. */
 export function TripDetailPage({ booking }: { booking: Booking }) {
+  const catalog = useMemo(
+    () => [
+      ...getProducts('tour'),
+      ...getProducts('transfer'),
+      ...getProducts('experience'),
+      ...getProducts('stay'),
+    ],
+    [],
+  )
+
+  const schedule = useMemo(() => {
+    const byDay = new Map<string, typeof booking.items>()
+    for (const item of booking.items) {
+      const day = item.date ?? booking.dates.start
+      byDay.set(day, [...(byDay.get(day) ?? []), item])
+    }
+    return Array.from(byDay.entries()).sort(([a], [b]) => a.localeCompare(b))
+  }, [booking.items, booking.dates.start])
+
+  const titleFor = (productId: string, type: string) =>
+    catalog.find((product) => product.id === productId)?.title ?? type
+
   return (
     <div className="page-narrow">
       <div className="row" style={{ marginBottom: 6 }}>
@@ -22,60 +46,41 @@ export function TripDetailPage({ booking }: { booking: Booking }) {
       <div className="stack">
         <section>
           <div className="eyebrow" style={{ marginBottom: 8 }}>
-            Today
+            Your itinerary
           </div>
-          <Card className="row-between">
-            <div className="col" style={{ gap: 2 }}>
-              <span className="bold text-small">08:00 — Airport transfer</span>
-              <span className="text-faint text-xs">Driver: Mike</span>
-            </div>
-            <Button variant="outline" size="sm">
-              Track driver
-            </Button>
-          </Card>
-          <Card className="row-between">
-            <div className="col" style={{ gap: 2 }}>
-              <span className="bold text-small">11:00 — Hotel check-in</span>
-              <span className="text-faint text-xs">Cape Lodge</span>
-            </div>
-            <Badge tone="gold">Next</Badge>
-          </Card>
-        </section>
-
-        <section>
-          <div className="eyebrow" style={{ marginBottom: 8 }}>
-            Tomorrow
-          </div>
-          <Card className="row-between">
-            <div className="col" style={{ gap: 2 }}>
-              <span className="bold text-small">08:30 — Stellenbosch Wine Tour</span>
-              <span className="text-faint text-xs">2 guests</span>
-            </div>
-            <Link to="/trips/$bookingId/ticket" params={{ bookingId: booking.id }}>
-              <Button variant="ink" size="sm">
-                Ticket
-              </Button>
-            </Link>
-          </Card>
+          {schedule.length === 0 ? (
+            <Card>
+              <p className="text-faint text-small">No items confirmed on this booking yet.</p>
+            </Card>
+          ) : (
+            schedule.map(([day, items]) => (
+              <Card key={day} className="stack">
+                <div className="row-between">
+                  <span className="bold text-small">{formatDate(day)}</span>
+                  <Badge tone="gold">{items.reduce((sum, item) => sum + item.qty, 0)} {items.length === 1 ? 'guest' : 'guests'}</Badge>
+                </div>
+                {items.map((item) => (
+                  <div key={`${item.productId}-${item.date}`} className="row-between">
+                    <span className="text-small">{titleFor(item.productId, item.type)}</span>
+                    <span className="text-faint text-xs">× {item.qty}</span>
+                  </div>
+                ))}
+              </Card>
+            ))
+          )}
         </section>
 
         <section className="grid-2">
-          <Link to="/trips/$bookingId/itinerary" params={{ bookingId: booking.id }}>
-            <Button variant="outline" block>
-              Full itinerary
-            </Button>
+          <Link to="/trips/$bookingId/itinerary" params={{ bookingId: booking.id }} className="btn btn-outline btn-block">
+            Full itinerary
           </Link>
-          <Link to="/trips/$bookingId/ticket" params={{ bookingId: booking.id }}>
-            <Button variant="outline" block>
-              Offline Ticket
-            </Button>
+          <Link to="/trips/$bookingId/ticket" params={{ bookingId: booking.id }} className="btn btn-outline btn-block">
+            Offline Ticket
           </Link>
         </section>
 
-        <Link to="/trips/$bookingId/support" params={{ bookingId: booking.id }}>
-          <Button variant="ghost" block>
-            Emergency Support
-          </Button>
+        <Link to="/trips/$bookingId/support" params={{ bookingId: booking.id }} className="btn btn-ghost btn-block">
+          Emergency Support
         </Link>
       </div>
     </div>

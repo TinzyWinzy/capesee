@@ -7,12 +7,16 @@ import { mockTours } from '@/lib/mock'
 /** T09 — Book home. Wireframe spec §11. */
 export function BookHomePage() {
   const [guests, setGuests] = useState(2)
+  const [region, setRegion] = useState('western-cape')
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
 
   return (
     <div className="page">
-      <h1 className="section-title" style={{ fontSize: 22, marginBottom: 14 }}>
-        Book your Cape experience
-      </h1>
+      <header className="book-home-head">
+        <p className="eyebrow">Plan your trip</p>
+        <h1 className="section-title">Book your Cape experience</h1>
+      </header>
 
       <div className="row wrap" style={{ marginBottom: 14 }}>
         {['Tours', 'Stays', 'Transfers'].map((t) => (
@@ -28,8 +32,8 @@ export function BookHomePage() {
 
       <Card className="stack">
         <label>
-          <span className="label">Where?</span>
-          <select className="select" defaultValue="western-cape">
+          <span className="label">Region</span>
+          <select className="select" value={region} onChange={(event) => setRegion(event.currentTarget.value)}>
             {REGIONS.map((r) => (
               <option key={r.slug} value={r.slug}>
                 {r.name}
@@ -38,13 +42,16 @@ export function BookHomePage() {
           </select>
         </label>
         <div className="grid-2">
-          <DatePicker label="From" value="2026-08-14" />
-          <DatePicker label="To" value="2026-08-16" />
+          <DatePicker label="From" value={from} onChange={setFrom} />
+          <DatePicker label="To" value={to} onChange={setTo} />
         </div>
         <GuestSelector value={guests} onChange={setGuests} />
         <Link to="/book/tours" className="btn btn-primary btn-block">
-          Search
+          Search experiences
         </Link>
+        <p className="text-faint text-xs">
+          {region === 'western-cape' ? 'Tours, stays and transfers across the Cape.' : 'Expanding catalog — more regions arriving soon.'}
+        </p>
       </Card>
 
       <div className="row-between" style={{ margin: '20px 0 10px' }}>

@@ -14,9 +14,14 @@ export function GuideTabs() {
 
   return (
     <nav className="nav-top">
-      <div className="nav-top-inner" style={{ gap: 6 }}>
+      <div className="nav-top-inner">
         {TABS.map((tab) => (
-          <Link key={tab.to} to={tab.to} className={cx('chip', pathname.startsWith(tab.to) && 'chip-active')}>
+          <Link
+            key={tab.to}
+            to={tab.to}
+            className={cx('chip', pathname.startsWith(tab.to) && 'chip-active')}
+            aria-current={pathname.startsWith(tab.to) ? 'page' : undefined}
+          >
             {tab.label}
           </Link>
         ))}

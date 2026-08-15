@@ -70,7 +70,7 @@ export function CheckoutPaymentPage() {
 
           <div className="checkout-provider-note">
             <span aria-hidden>◇</span>
-            <p><strong>Secure provider handoff</strong>In production, you’ll be redirected to the configured provider to enter payment details and authenticate the transaction.</p>
+            <p><strong>Secure provider handoff</strong> In production, you’ll be redirected to the configured provider to enter payment details and authenticate the transaction.</p>
           </div>
 
           <label className="checkout-consent"><input type="checkbox" checked={termsAccepted} onChange={(event) => setTermsAccepted(event.target.checked)} /><span>I have reviewed the trip details and understand the applicable cancellation terms.</span></label>

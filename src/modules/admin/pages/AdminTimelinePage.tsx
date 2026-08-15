@@ -1,22 +1,66 @@
-import { Badge, Card } from '@/components/ui'
-import { mockTimeline } from '@/lib/mock'
+import { useMemo, useState } from 'react'
+import { Badge, Card, EmptyState } from '@/components/ui'
+import { mockPlaces, mockTimeline } from '@/lib/mock'
 
-/** A09 — Timeline management. Wireframe spec §35. */
+const PLACE_NAME = (id: string) => mockPlaces.find((p) => p.id === id)?.name
+
+/** A09 — Timeline management. Searchable, filterable. Wireframe spec §35. */
 export function AdminTimelinePage() {
+  const [query, setQuery] = useState('')
+  const [placeId, setPlaceId] = useState('all')
+  const [status, setStatus] = useState('all')
+
+  const placeIds = useMemo(() => Array.from(new Set(mockTimeline.map((e) => e.placeId))), [])
+  const statuses = useMemo(() => Array.from(new Set(mockTimeline.map((e) => e.status))), [])
+
+  const rows = mockTimeline.filter((e) => {
+    const matchesQuery =
+      !query ||
+      e.title.toLowerCase().includes(query.toLowerCase()) ||
+      String(e.year).includes(query.toLowerCase())
+    const matchesPlace = placeId === 'all' || e.placeId === placeId
+    const matchesStatus = status === 'all' || e.status === status
+    return matchesQuery && matchesPlace && matchesStatus
+  })
+
   return (
     <div className="stack">
       <div className="row-between">
         <h1 className="section-title">Timeline</h1>
-        <input className="input" placeholder="Search place / year…" style={{ maxWidth: 260 }} />
+        <input
+          className="input"
+          placeholder="Search place / year…"
+          style={{ maxWidth: 260 }}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          aria-label="Search timeline entries"
+        />
       </div>
 
       <div className="row wrap">
-        <select className="select" style={{ maxWidth: 160 }}>
-          <option>All places</option>
-          <option>Castle of Good Hope</option>
+        <select
+          className="select"
+          style={{ maxWidth: 200 }}
+          value={placeId}
+          onChange={(event) => setPlaceId(event.target.value)}
+          aria-label="Filter by place"
+        >
+          <option value="all">All places</option>
+          {placeIds.map((id) => (
+            <option key={id} value={id}>{PLACE_NAME(id)}</option>
+          ))}
         </select>
-        <select className="select" style={{ maxWidth: 160 }}>
-          <option>All statuses</option>
+        <select
+          className="select"
+          style={{ maxWidth: 160 }}
+          value={status}
+          onChange={(event) => setStatus(event.target.value)}
+          aria-label="Filter by status"
+        >
+          <option value="all">All statuses</option>
+          {statuses.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
         </select>
       </div>
 
@@ -31,11 +75,11 @@ export function AdminTimelinePage() {
           </tr>
         </thead>
         <tbody>
-          {mockTimeline.map((e) => (
+          {rows.map((e) => (
             <tr key={e.id}>
               <td className="bold">{e.year}</td>
               <td>{e.title}</td>
-              <td>{e.placeId === 'p-castle' ? 'Castle of Good Hope' : '—'}</td>
+              <td>{PLACE_NAME(e.placeId)}</td>
               <td>{e.sourceBacked ? <Badge tone="info">Source-backed</Badge> : <Badge tone="gold">Traveler</Badge>}</td>
               <td>
                 <Badge tone="success">{e.status}</Badge>
@@ -44,6 +88,10 @@ export function AdminTimelinePage() {
           ))}
         </tbody>
       </table>
+
+      {rows.length === 0 ? (
+        <EmptyState icon="◔" title="No matching entries" description="Adjust the search or filters to see more timeline entries." />
+      ) : null}
 
       <Card>
         <span className="eyebrow">Timeline entry detail</span>

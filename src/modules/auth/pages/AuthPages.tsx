@@ -11,7 +11,7 @@ import {
 
 function AuthError({ message }: { message?: string }) {
   return message ? (
-    <p role="alert" className="text-small" style={{ color: '#a13d2d', margin: 0 }}>
+    <p role="alert" className="error-box">
       {message}
     </p>
   ) : null
@@ -72,7 +72,7 @@ export function LoginPage() {
           <input className="input" name="password" type="password" autoComplete="current-password" required />
         </label>
         <AuthError message={error} />
-        <Link to="/auth/forgot-password" className="text-small bold" style={{ color: 'var(--color-accent-strong)' }}>
+        <Link to="/auth/forgot-password" className="text-small bold text-accent">
           Forgot password?
         </Link>
         <Button type="submit" variant="primary" block disabled={busy}>
@@ -82,7 +82,7 @@ export function LoginPage() {
 
       <p className="text-faint text-small" style={{ textAlign: 'center', margin: 0 }}>
         New to Capesee?{' '}
-        <Link to="/auth/signup" className="bold" style={{ color: 'var(--color-accent-strong)' }}>Create account</Link>
+        <Link to="/auth/signup" className="bold text-accent">Create account</Link>
       </p>
       <Link to="/discover" className="btn btn-ghost btn-sm" style={{ alignSelf: 'center' }}>Browse as guest</Link>
     </div>
@@ -148,7 +148,7 @@ export function SignupPage() {
       </form>
       <p className="text-faint text-small" style={{ textAlign: 'center', margin: 0 }}>
         Already have an account?{' '}
-        <Link to="/auth/login" search={{ redirect: undefined }} className="bold" style={{ color: 'var(--color-accent-strong)' }}>Sign in</Link>
+        <Link to="/auth/login" search={{ redirect: undefined }} className="bold text-accent">Sign in</Link>
       </p>
     </div>
   )
@@ -200,7 +200,7 @@ export function ForgotPasswordPage() {
           <Button type="submit" variant="primary" block disabled={busy}>{busy ? 'Sending…' : 'Send reset link'}</Button>
         </form>
       )}
-      <Link to="/auth/login" search={{ redirect: undefined }} className="text-small bold" style={{ color: 'var(--color-accent-strong)' }}>
+      <Link to="/auth/login" search={{ redirect: undefined }} className="text-small bold text-accent">
         ← Back to sign in
       </Link>
     </div>

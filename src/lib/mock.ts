@@ -170,6 +170,10 @@ export function getPlaceBySlug(slug: string): Place | undefined {
   return mockPlaces.find((p) => p.slug === slug)
 }
 
+export function getPlaceById(id: string): Place | undefined {
+  return mockPlaces.find((p) => p.id === id)
+}
+
 export function getProductBySlug(type: 'tour' | 'stay' | 'transfer' | 'experience', slug: string): BookableProduct | undefined {
   const all = [...mockTours, ...mockStays, ...mockTransfers, ...mockExperiences]
   return all.find((p) => p.type === type && p.slug === slug)

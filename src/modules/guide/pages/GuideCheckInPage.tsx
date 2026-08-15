@@ -1,10 +1,10 @@
-import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Button, Card } from '@/components/ui'
 
-/** G03 — QR check-in. Wireframe spec §24. */
+/** G03 — QR check-in. Wireframe spec §24. Camera is mock; check-in completes locally. */
 export function GuideCheckInPage() {
   const [scanned, setScanned] = useState(false)
+  const [checkedIn, setCheckedIn] = useState(false)
 
   return (
     <div className="page-narrow">
@@ -37,19 +37,21 @@ export function GuideCheckInPage() {
       ) : (
         <Card className="col" style={{ alignItems: 'center', padding: 32, gap: 6 }}>
           <div className="avatar" style={{ width: 56, height: 56, fontSize: 24, background: 'var(--color-success)', color: '#fff', border: 'none' }}>
-            ✓
+            {checkedIn ? '✓' : '▢'}
           </div>
           <div className="section-title">Sarah Williams</div>
-          <span className="text-faint text-small">Booking confirmed</span>
+          <span className="text-faint text-small">{checkedIn ? 'Checked in' : 'Booking confirmed'}</span>
           <span className="badge badge-ink">2 Guests</span>
-          <Button variant="primary" block style={{ marginTop: 12 }}>
-            Check In
-          </Button>
-          <Link to="/guide/check-in">
-            <Button variant="ghost" size="sm">
-              Scan another
+          {checkedIn ? (
+            <span className="badge badge-success">Present</span>
+          ) : (
+            <Button variant="primary" block style={{ marginTop: 12 }} onClick={() => setCheckedIn(true)}>
+              Check In
             </Button>
-          </Link>
+          )}
+          <button className="btn btn-ghost btn-sm" onClick={() => { setScanned(false); setCheckedIn(false) }}>
+            Scan another
+          </button>
         </Card>
       )}
     </div>

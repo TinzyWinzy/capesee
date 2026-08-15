@@ -52,24 +52,27 @@ export function AdminSidebar() {
       <Link to="/admin/dashboard" className="brand">
         CAPESEE ADMIN
       </Link>
-      <Link to="/admin/dashboard" className={`admin-link ${pathname === '/admin/dashboard' ? 'active' : ''}`} style={{ marginBottom: 8 }}>
+      <Link
+        to="/admin/dashboard"
+        className={`admin-link admin-link-dashboard ${pathname === '/admin/dashboard' ? 'active' : ''}`}
+        aria-current={pathname === '/admin/dashboard' ? 'page' : undefined}
+      >
         ▦ Dashboard
       </Link>
       {NAV.map((group) => (
         <div key={group.label} className="admin-group">
           <div className="admin-group-label">{group.label}</div>
-          {group.links.map((link) => (
-            <Link key={link.to} to={link.to} className={`admin-link ${pathname.startsWith(link.to) ? 'active' : ''}`}>
-              {link.label}
-            </Link>
-          ))}
+          {group.links.map((link) => {
+            const active = pathname.startsWith(link.to)
+            return (
+              <Link key={link.to} to={link.to} className={`admin-link ${active ? 'active' : ''}`} aria-current={active ? 'page' : undefined}>
+                {link.label}
+              </Link>
+            )
+          })}
         </div>
       ))}
-      <button
-        className="admin-link"
-        style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer' }}
-        onClick={() => void signOut()}
-      >
+      <button className="admin-link admin-link-button" onClick={() => void signOut()}>
         Sign out
       </button>
     </aside>

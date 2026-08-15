@@ -1,10 +1,30 @@
+import { useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Badge, Card, PlaceholderPage } from '@/components/ui'
+import { Badge, Card, EmptyState, PlaceholderPage } from '@/components/ui'
 import { getPlaces } from '@/modules/places/api/places'
 
-/** A04 — Admin places list. Wireframe spec §30. */
+/** A04 — Admin places list. Searchable, filterable. Wireframe spec §30. */
 export function AdminPlacesPage() {
   const places = getPlaces()
+  const [query, setQuery] = useState('')
+  const [regionSlug, setRegionSlug] = useState('all')
+  const [type, setType] = useState('all')
+
+  const regions = useMemo(
+    () =>
+      Array.from(new Set(places.map((p) => p.regionSlug)))
+        .map((slug) => ({ slug, name: slug.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ') })),
+    [places],
+  )
+  const types = useMemo(() => Array.from(new Set(places.map((p) => p.type))), [places])
+
+  const rows = places.filter((p) => {
+    const matchesQuery = !query || p.name.toLowerCase().includes(query.toLowerCase())
+    const matchesRegion = regionSlug === 'all' || p.regionSlug === regionSlug
+    const matchesType = type === 'all' || p.type === type
+    return matchesQuery && matchesRegion && matchesType
+  })
+
   return (
     <div className="stack">
       <div className="row-between">
@@ -15,13 +35,37 @@ export function AdminPlacesPage() {
       </div>
 
       <div className="row wrap">
-        <input className="input" placeholder="Search…" style={{ maxWidth: 260 }} />
-        <select className="select" style={{ maxWidth: 160 }}>
-          <option>All regions</option>
-          <option>Western Cape</option>
+        <input
+          className="input"
+          placeholder="Search…"
+          style={{ maxWidth: 260 }}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          aria-label="Search places"
+        />
+        <select
+          className="select"
+          style={{ maxWidth: 160 }}
+          value={regionSlug}
+          onChange={(event) => setRegionSlug(event.target.value)}
+          aria-label="Filter by region"
+        >
+          <option value="all">All regions</option>
+          {regions.map((region) => (
+            <option key={region.slug} value={region.slug}>{region.name}</option>
+          ))}
         </select>
-        <select className="select" style={{ maxWidth: 160 }}>
-          <option>All types</option>
+        <select
+          className="select"
+          style={{ maxWidth: 160 }}
+          value={type}
+          onChange={(event) => setType(event.target.value)}
+          aria-label="Filter by type"
+        >
+          <option value="all">All types</option>
+          {types.map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
         </select>
       </div>
 
@@ -35,7 +79,7 @@ export function AdminPlacesPage() {
           </tr>
         </thead>
         <tbody>
-          {places.map((p) => (
+          {rows.map((p) => (
             <tr key={p.id}>
               <td>
                 <Link to="/admin/places/$placeId" params={{ placeId: p.id }} className="bold text-small">
@@ -50,6 +94,10 @@ export function AdminPlacesPage() {
           ))}
         </tbody>
       </table>
+
+      {rows.length === 0 ? (
+        <EmptyState icon="▦" title="No matching places" description="Adjust the search or filters." />
+      ) : null}
     </div>
   )
 }

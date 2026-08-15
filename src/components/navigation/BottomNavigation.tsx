@@ -12,16 +12,23 @@ const ITEMS = [
 export function BottomNavigation() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
 
-  const isActive = (to: string) => (to === '/discover' ? pathname === '/' || pathname.startsWith('/discover') : pathname.startsWith(to))
+  const isActive = (to: string) => {
+    if (to === '/discover') return pathname === '/' || pathname.startsWith('/discover')
+    if (to === '/account/profile') return pathname.startsWith('/account')
+    return pathname.startsWith(to)
+  }
 
   return (
     <nav className="nav-bottom" aria-label="Primary">
-      {ITEMS.map((item) => (
-        <Link key={item.to} to={item.to} className={isActive(item.to) ? 'active' : ''}>
-          <span className="nav-icon"><Icon name={item.icon} /></span>
-          {item.label}
-        </Link>
-      ))}
+      {ITEMS.map((item) => {
+        const active = isActive(item.to)
+        return (
+          <Link key={item.to} to={item.to} className={active ? 'active' : ''} aria-current={active ? 'page' : undefined}>
+            <span className="nav-icon"><Icon name={item.icon} /></span>
+            {item.label}
+          </Link>
+        )
+      })}
     </nav>
   )
 }

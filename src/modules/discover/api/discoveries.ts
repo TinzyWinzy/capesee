@@ -8,9 +8,26 @@ import { getSupabase } from '@/services/supabase/client'
  * TODO(Sprint 3): supabase.from('pins').select(...) filtered by radius,
  * with realtime subscription for new pins within bounds.
  */
+
+const CAPE_TOWN = { lat: -33.9249, lng: 18.4241 }
+
+function distanceMeters(from: { lat: number; lng: number }, to: { lat: number; lng: number }): number {
+  const toRadians = (degrees: number) => (degrees * Math.PI) / 180
+  const earthRadius = 6371000
+  const dLat = toRadians(to.lat - from.lat)
+  const dLng = toRadians(to.lng - from.lng)
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRadians(from.lat)) * Math.cos(toRadians(to.lat)) * Math.sin(dLng / 2) ** 2
+  return earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
+
 export function getNearbyDiscoveries(radiusMeters = 5000): Pin[] {
-  void radiusMeters
-  return mockPins.filter((p) => p.status === 'approved' || p.status === 'pending')
+  return mockPins.filter(
+    (p) =>
+      (p.status === 'approved' || p.status === 'pending') &&
+      distanceMeters(CAPE_TOWN, p.coordinates) <= radiusMeters,
+  )
 }
 
 export function getDiscoveriesForPlace(placeSlug: string): Pin[] {

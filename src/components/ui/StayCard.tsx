@@ -6,7 +6,7 @@ export function StayCard({ stay }: { stay: BookableProduct }) {
   return (
     <Link to="/book/stays/$hotelSlug" params={{ hotelSlug: stay.slug }}>
       <Card flush className="card-link">
-        <div className="media ratio-16-9">{stay.coverUrl ? <img src={stay.coverUrl} alt={stay.title} /> : <span>{stay.title}</span>}</div>
+        <div className="media ratio-16-9">{stay.coverUrl ? <img src={stay.coverUrl} alt={stay.title} /> : <div className="media-fallback stay-placeholder">{stay.title}</div>}</div>
         <div className="col" style={{ padding: 12, gap: 4 }}>
           <div className="row-between">
             <span className="bold">{stay.title}</span>

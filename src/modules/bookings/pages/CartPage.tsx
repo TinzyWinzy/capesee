@@ -86,7 +86,7 @@ export function CartPage() {
             <div className="trip-order-total"><dt>Total</dt><dd>{formatRand(total)}</dd></div>
           </dl>
           <button type="button" className="btn btn-primary btn-lg btn-block" onClick={() => navigate({ to: '/checkout/details' })}>Continue to checkout</button>
-          <div className="trip-order-assurance"><span aria-hidden>◇</span><p><strong>Review before payment</strong>Traveler details and applicable terms come next.</p></div>
+          <div className="trip-order-assurance"><span aria-hidden>◇</span><p><strong>Review before payment</strong> Traveler details and applicable terms come next.</p></div>
         </aside>
       </div>
     </main>

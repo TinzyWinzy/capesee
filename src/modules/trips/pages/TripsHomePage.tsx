@@ -30,7 +30,7 @@ export function TripsHomePage() {
         <EmptyState
           icon="✈"
           title={tab === 'upcoming' ? 'No upcoming trips' : 'No past trips yet'}
-          description="Your bookings will appear here. Everything works offline once cached."
+          description="Your bookings will appear here after checkout."
         />
       ) : (
         <div className="stack">

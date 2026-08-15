@@ -5,31 +5,35 @@ import { PIN_CATEGORIES } from '@/lib/constants'
 import { useOnline } from '@/hooks/useOnline'
 import { enqueueAction, isOnline } from '@/services/offline'
 import { publishPin } from '@/modules/journal/api/journal'
+import { useAuthStore } from '@/stores/auth'
 
 /** T07 — Create discovery. Must be extremely easy. Wireframe spec §9. */
 export function CreateDiscoveryPage() {
   const navigate = useNavigate()
   const online = useOnline()
+  const authorName = useAuthStore((state) => state.user?.fullName) ?? 'Traveler'
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState<(typeof PIN_CATEGORIES)[number]>('Wildlife')
   const [photo, setPhoto] = useState<string | undefined>()
   const [mediaFile, setMediaFile] = useState<File>()
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null)
   const [saved, setSaved] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string>()
 
   const publish = async () => {
     setError(undefined)
+    const coordinates = coords ?? { lat: -33.9249, lng: 18.4241 }
     if (online) {
       setBusy(true)
       try {
         await publishPin({
-          authorName: 'Traveler',
+          authorName,
           title: title || 'Untitled discovery',
           description,
           category,
-          coordinates: { lat: -33.92, lng: 18.42 },
+          coordinates,
           photoUrl: undefined,
           likes: 0,
           comments: 0,
@@ -47,11 +51,11 @@ export function CreateDiscoveryPage() {
         kind: 'publish-pin',
         payload: {
           id: `pin-${Date.now()}`,
-          authorName: 'Tinotenda',
+          authorName,
           title,
           description,
           category,
-          coordinates: { lat: -33.92, lng: 18.42 },
+          coordinates,
           createdAt: new Date().toISOString(),
           status: 'draft',
           photoUrl: undefined,
@@ -99,7 +103,7 @@ export function CreateDiscoveryPage() {
 
         <section>
           <span className="label">Location</span>
-          <LocationPicker />
+          <LocationPicker onPick={setCoords} />
         </section>
 
         <section>
@@ -111,13 +115,6 @@ export function CreateDiscoveryPage() {
               </button>
             ))}
           </div>
-        </section>
-
-        <section className="row-between">
-          <span className="label" style={{ marginBottom: 0 }}>
-            When?
-          </span>
-          <button className="chip chip-active">Now ▾</button>
         </section>
 
         {saved ? (

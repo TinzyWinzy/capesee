@@ -3,7 +3,8 @@ import { DiscoveryCard, Icon, SearchBar, TourCard } from '@/components/ui'
 import { MapSurface } from '@/components/maps/MapSurface'
 import { MapMarker } from '@/components/maps/MapMarker'
 import { REGIONS } from '@/lib/constants'
-import { mockPins, mockTours } from '@/lib/mock'
+import { mockTours } from '@/lib/mock'
+import { getNearbyDiscoveries } from '@/modules/discover/api/discoveries'
 import { useAuthStore } from '@/stores/auth'
 
 /** T01 — Landing / Discover Home. Wireframe spec §3. */
@@ -11,7 +12,7 @@ export function DiscoverHomePage() {
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
   const initials = user?.fullName?.charAt(0) ?? '?'
-  const nearbyPins = mockPins.slice(0, 2)
+  const nearbyPins = getNearbyDiscoveries().slice(0, 2)
 
   return (
     <main className="discover-home">
@@ -84,7 +85,7 @@ export function DiscoverHomePage() {
           </div>
           <div className={`discover-card-row discovery-row${nearbyPins.length === 0 ? ' is-empty' : ''}`}>
             {nearbyPins.map((pin) => (
-              <DiscoveryCard key={pin.id} pin={pin} distanceMeters={340 + mockPins.indexOf(pin) * 860} />
+              <DiscoveryCard key={pin.id} pin={pin} />
             ))}
             <Link to="/journal/create" className="add-discovery-card">
               <span className="add-mark" aria-hidden>＋</span>

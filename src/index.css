@@ -1430,7 +1430,7 @@ p {
 
 /* Final specificity layer: operational surfaces and editorial type. */
 .admin-side { background: #142823; }
-.admin-link { border-radius: 4px; }
+.admin-link { border-radius: 4px; transition: background .16s ease, color .16s ease; }
 .admin-link.active { background: #e6ded0; color: var(--color-ink); }
 .admin-main { padding: clamp(20px, 3vw, 38px); background: #f2efe8; }
 .table { border-radius: 4px; }
@@ -1438,3 +1438,152 @@ p {
 .place-title-block h1,
 .checkout-page-heading h1,
 .checkout-status-page h1 { font-family: var(--font-display); }
+
+/* ============================================================
+   Production polish layer
+   Shared utilities, error surfaces, interaction and a11y refinements.
+   ============================================================ */
+
+/* ---------- Error / notice surfaces ---------- */
+
+.error-box {
+  margin: 0;
+  padding: 11px 13px;
+  border: 1px solid #ecc6c2;
+  border-radius: var(--radius-sm);
+  background: #f6dfdd;
+  color: var(--color-danger);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.alert {
+  padding: 11px 13px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.alert-error {
+  border-color: #ecc6c2;
+  background: #f6dfdd;
+  color: var(--color-danger);
+}
+.alert-success {
+  border-color: #bfe0cd;
+  background: #ddefe5;
+  color: var(--color-success);
+}
+
+.text-accent { color: var(--color-accent-strong); }
+
+/* ---------- Interaction refinement ---------- */
+
+.chip { transition: background .15s ease, color .15s ease, border-color .15s ease; }
+.chip:hover { border-color: var(--color-ink-faint); color: var(--color-ink); }
+.chip-active:hover { background: var(--color-ink); border-color: var(--color-ink); color: #fff; }
+
+.admin-link:focus-visible { outline: 2px solid #e6ded0; outline-offset: -2px; }
+.avatar { transition: border-color .15s ease, box-shadow .15s ease; }
+a.avatar:hover { border-color: var(--color-accent); color: var(--color-accent-strong); }
+
+.checkout-payment-option { transition: border-color .16s ease, box-shadow .16s ease; }
+.checkout-payment-option:has(input:focus-visible) {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: 2px;
+}
+.checkout-payment-option:hover { border-color: var(--color-ink-faint); }
+
+.table tbody tr { transition: background .12s ease; }
+.table tbody tr:hover { background: color-mix(in srgb, var(--color-surface-2) 45%, var(--color-surface)); }
+
+.card-link { position: relative; }
+
+/* ---------- Shells ---------- */
+
+.app-shell { min-height: 100vh; padding-bottom: calc(var(--nav-bottom-h) + var(--safe-bottom) + 8px); }
+
+.guide-shell { min-height: 100vh; }
+
+.account-shell { max-width: 1200px; margin: 0 auto; padding: 40px 16px 96px; }
+.account-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; padding-bottom: 26px; border-bottom: 1px solid var(--color-line); }
+.account-heading h1 { font: 500 clamp(38px, 4.6vw, 58px)/1 var(--font-display); letter-spacing: -.04em; }
+.account-heading > p:last-child { max-width: 460px; color: var(--color-ink-muted); font-size: 13px; }
+
+.account-tabs { display: flex; gap: 22px; overflow-x: auto; margin-top: 18px; border-bottom: 1px solid var(--color-line); }
+.account-tabs a { flex: 0 0 auto; padding: 13px 0 11px; color: var(--color-ink-muted); border-bottom: 2px solid transparent; font-size: 12px; font-weight: 700; }
+.account-tabs a.is-active { color: var(--color-accent-strong); border-bottom-color: var(--color-accent); }
+
+.account-section { max-width: 820px; margin-top: 34px; display: grid; gap: 16px; }
+.account-section-title { margin: 6px 0 0; display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--color-line); color: var(--color-ink-muted); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 750; }
+
+/* ---------- Media fallbacks for non-editorial tiers ---------- */
+
+.media-fallback {
+  padding: 12px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: var(--color-ink-muted);
+  font-size: 12px;
+}
+.stay-placeholder { background: linear-gradient(150deg, #c8bbaa, #544b45); color: rgba(255,255,255,.9); }
+.catalog-placeholder { background: linear-gradient(150deg, #b9cbd2, #304650); color: rgba(255,255,255,.9); }
+
+/* ---------- Compact admin editor tables / panels ---------- */
+
+.admin-link-dashboard { margin-bottom: 8px; }
+.admin-link-button { width: 100%; background: none; border: none; cursor: pointer; text-align: left; }
+.guide-shell .nav-top-inner { gap: 6px; }
+
+.admin-panel { display: grid; gap: 18px; }
+.admin-panel-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; margin-bottom: 4px; }
+.admin-panel-head h2 { font: 500 26px var(--font-display); }
+.admin-panel-head > span { color: var(--color-ink-faint); font-size: 11px; text-transform: uppercase; letter-spacing: .07em; }
+
+.admin-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.admin-form-actions { margin-top: 6px; display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ---------- Skeleton wiring ---------- */
+
+.skeleton-block { display: grid; gap: 14px; }
+.skeleton-row { height: 16px; }
+
+/* ---------- Journal feed ---------- */
+
+.feed-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; margin-bottom: 22px; }
+.book-home-head { margin-bottom: 18px; }
+.feed-list { display: grid; gap: 16px; }
+.feed-item { padding: 20px; display: grid; gap: 12px; }
+.feed-item-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.feed-item-author { display: flex; align-items: center; gap: 10px; }
+.feed-item-author .avatar { width: 34px; height: 34px; font-size: 13px; }
+.feed-item-author strong { font-size: 13px; }
+.feed-item-author small { color: var(--color-ink-faint); font-size: 11px; }
+.feed-item-title { font: 500 21px/1.2 var(--font-display); letter-spacing: -.01em; }
+.feed-item-body { color: var(--color-ink-muted); font-size: 13px; line-height: 1.6; }
+.feed-item-meta { display: flex; align-items: center; gap: 16px; color: var(--color-ink-faint); font-size: 11px; }
+.feed-item-meta span { display: inline-flex; align-items: center; gap: 5px; }
+
+/* ---------- Mobile admin / nav ---------- */
+
+@media (max-width: 767px) {
+  .admin-side { padding: 10px 12px 12px; display: grid; grid-template-columns: 1fr; gap: 4px; }
+  .admin-side .brand { padding: 2px 8px 8px; }
+  .admin-group { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+  .admin-group-label { display: none; }
+  .admin-link { padding: 7px 11px; font-size: 12px; }
+  .nav-top { position: sticky; }
+  .guide-shell .nav-top-inner { height: auto; min-height: 56px; flex-wrap: nowrap; overflow-x: auto; padding: 8px 12px; }
+  .guide-shell .nav-top-inner .chip { flex: 0 0 auto; }
+  .account-shell { padding: 30px 14px 88px; }
+  .account-heading h1 { font-size: 40px; }
+  .account-tabs { gap: 16px; }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; }
+}

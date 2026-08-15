@@ -4,7 +4,7 @@ import { GuideTabs } from '@/components/navigation/GuideTabs'
 /** Guide shell — simple: Today, Schedule, Check-in, Profile (spec §21). */
 export function GuideLayout() {
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <div className="guide-shell">
       <GuideTabs />
       <Outlet />
     </div>
