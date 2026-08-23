@@ -5,6 +5,34 @@ import type { Booking, BookableProduct, Claim, HarvestSource, Pin, Place, Timeli
  * reads from here; the module api/ files are the swap point for Supabase.
  */
 
+/** Hero gallery — best landscape shots from the Cape field trip, shown on the Discover home page. */
+export const heroGallery = [
+  { src: '/images/IMG-20260823-WA0114.jpg', alt: "Hout Bay from Chapman's Peak, Cape Peninsula" },
+  { src: '/images/IMG-20260823-WA0119.jpg', alt: 'Golden hour sunset over the Cape lagoon' },
+  { src: '/images/IMG-20260823-WA0141.jpg', alt: 'Camps Bay beach with the Twelve Apostles' },
+  { src: '/images/IMG-20260823-WA0153.jpg', alt: 'Chapmans Peak viewpoint over Hout Bay' },
+  { src: '/images/IMG-20260823-WA0160.jpg', alt: 'Cape Peninsula coastal cliffs' },
+  { src: '/images/IMG-20260823-WA0180.jpg', alt: 'Sunlight through Stellenbosch vineyard trees' },
+]
+
+/** Cape field-trip photo reel — shown as a scrolling gallery strip. */
+export const photoReel = [
+  { src: '/images/IMG-20260823-WA0114.jpg', alt: 'Hout Bay panorama' },
+  { src: '/images/IMG-20260823-WA0150.jpg', alt: 'Viewpoint over Hout Bay' },
+  { src: '/images/IMG-20260823-WA0153.jpg', alt: "Chapman's Peak" },
+  { src: '/images/IMG-20260823-WA0141.jpg', alt: 'Camps Bay at dusk' },
+  { src: '/images/IMG-20260823-WA0160.jpg', alt: 'Coastal cliffs tour' },
+  { src: '/images/IMG-20260823-WA0179.jpg', alt: 'Tokara Wine Estate sign' },
+  { src: '/images/IMG-20260823-WA0180.jpg', alt: 'Winelands sunburst' },
+  { src: '/images/IMG-20260823-WA0184.jpg', alt: 'Wine estate courtyard' },
+  { src: '/images/IMG-20260823-WA0192.jpg', alt: 'Cape farmhouse lawn' },
+  { src: '/images/IMG-20260823-WA0173.jpg', alt: 'Suspension bridge at estate' },
+  { src: '/images/IMG-20260823-WA0185.jpg', alt: 'Winery garden path' },
+  { src: '/images/IMG-20260823-WA0119.jpg', alt: 'Sunset over the Cape' },
+  { src: '/images/IMG-20260823-WA0131.jpg', alt: 'Cape Town heritage building' },
+  { src: '/images/IMG-20260823-WA0117.jpg', alt: 'Dramatic storm clouds' },
+]
+
 export const mockPlaces: Place[] = [
   {
     id: 'p-castle',
@@ -22,6 +50,7 @@ export const mockPlaces: Place[] = [
     pinCount: 46,
     experienceCount: 3,
     sourceCount: 6,
+    coverUrl: '/images/IMG-20260823-WA0131.jpg',
   },
   {
     id: 'p-kirstenbosch',
@@ -38,6 +67,7 @@ export const mockPlaces: Place[] = [
     pinCount: 93,
     experienceCount: 2,
     sourceCount: 4,
+    coverUrl: '/images/IMG-20260823-WA0185.jpg',
   },
   {
     id: 'p-stellenbosch',
@@ -47,13 +77,14 @@ export const mockPlaces: Place[] = [
     type: 'Town & Wine Region',
     locationName: 'Stellenbosch',
     coordinates: { lat: -33.9364, lng: 18.8616 },
-    description: 'One of South Africa’s oldest towns, the centre of the Cape winelands.',
+    description: "One of South Africa's oldest towns, the centre of the Cape winelands.",
     rating: 4.6,
     verified: true,
     timelineCount: 8,
     pinCount: 40,
     experienceCount: 5,
     sourceCount: 3,
+    coverUrl: '/images/IMG-20260823-WA0179.jpg',
   },
   {
     id: 'p-hermanus',
@@ -70,6 +101,7 @@ export const mockPlaces: Place[] = [
     pinCount: 27,
     experienceCount: 2,
     sourceCount: 2,
+    coverUrl: '/images/IMG-20260823-WA0119.jpg',
   },
 ]
 
@@ -81,21 +113,23 @@ export const mockTimeline: TimelineEvent[] = [
 ]
 
 export const mockPins: Pin[] = [
-  { id: 'pin-1', placeId: 'p-kirstenbosch', authorName: 'Thabo M.', title: 'Rare bird spotted', description: 'Heard the call before I saw it — malachite sunbird feeding on proteas.', category: 'Wildlife', coordinates: { lat: -33.987, lng: 18.431 }, createdAt: '2026-08-12T08:20:00Z', status: 'approved', likes: 12, comments: 3 },
-  { id: 'pin-2', placeId: 'p-castle', authorName: 'Sofia R.', title: 'Restoration works visible', description: 'The west wall is being repointed. Fascinating to watch.', category: 'History', coordinates: { lat: -33.9261, lng: 18.4271 }, createdAt: '2026-08-11T15:40:00Z', status: 'approved', likes: 8, comments: 1 },
-  { id: 'pin-3', placeId: 'p-hermanus', authorName: 'James K.', title: 'Whale breach at the cliffs', description: 'Southern right whale breached twice off Gearing’s Point.', category: 'Wildlife', coordinates: { lat: -34.4217, lng: 19.2371 }, createdAt: '2026-08-12T07:10:00Z', status: 'pending', likes: 0, comments: 0 },
+  { id: 'pin-1', placeId: 'p-kirstenbosch', authorName: 'Thabo M.', title: 'Rare bird spotted', description: 'Heard the call before I saw it — malachite sunbird feeding on proteas.', category: 'Wildlife', coordinates: { lat: -33.987, lng: 18.431 }, createdAt: '2026-08-12T08:20:00Z', status: 'approved', likes: 12, comments: 3, photoUrl: '/images/IMG-20260823-WA0173.jpg' },
+  { id: 'pin-2', placeId: 'p-castle', authorName: 'Sofia R.', title: 'Restoration works visible', description: 'The west wall is being repointed. Fascinating to watch.', category: 'History', coordinates: { lat: -33.9261, lng: 18.4271 }, createdAt: '2026-08-11T15:40:00Z', status: 'approved', likes: 8, comments: 1, photoUrl: '/images/IMG-20260823-WA0131.jpg' },
+  { id: 'pin-3', placeId: 'p-hermanus', authorName: 'James K.', title: 'Whale breach at the cliffs', description: 'Southern right whale breached twice off Gearing’s Point.', category: 'Wildlife', coordinates: { lat: -34.4217, lng: 19.2371 }, createdAt: '2026-08-12T07:10:00Z', status: 'pending', likes: 0, comments: 0, photoUrl: '/images/IMG-20260823-WA0119.jpg' },
+  { id: 'pin-4', placeId: 'p-stellenbosch', authorName: 'Mia V.', title: 'Tokara estate in full colour', description: 'The orchard walk is a hidden gem — proper fynbos and old oaks.', category: 'Other', coordinates: { lat: -33.9364, lng: 18.8616 }, createdAt: '2026-08-23T09:30:00Z', status: 'approved', likes: 21, comments: 5, photoUrl: '/images/IMG-20260823-WA0192.jpg' },
+  { id: 'pin-5', placeId: 'p-kirstenbosch', authorName: 'Luke D.', title: 'Bridge walk at sunset', description: 'The suspension walkway hits differently at golden hour.', category: 'Other', coordinates: { lat: -33.9887, lng: 18.432 }, createdAt: '2026-08-23T17:10:00Z', status: 'approved', likes: 34, comments: 8, photoUrl: '/images/IMG-20260823-WA0180.jpg' },
 ]
 
 export const mockTours: BookableProduct[] = [
-  { id: 'tour-1', type: 'tour', slug: 'stellenbosch-wine-experience', title: 'Stellenbosch Wine Experience', price: 1250, priceUnit: 'person', rating: 4.9, reviewCount: 220, durationHours: 8, regionSlug: 'western-cape', pickupIncluded: true, guideIncluded: true },
-  { id: 'tour-2', type: 'tour', slug: 'cape-peninsula-tour', title: 'Cape Peninsula Tour', price: 950, priceUnit: 'person', rating: 4.8, reviewCount: 310, durationHours: 9, regionSlug: 'western-cape', pickupIncluded: true, guideIncluded: true },
-  { id: 'tour-3', type: 'tour', slug: 'cape-town-walking-tour', title: 'Cape Town Walking Tour', price: 450, priceUnit: 'person', rating: 4.7, reviewCount: 96, durationHours: 3, regionSlug: 'western-cape', pickupIncluded: false, guideIncluded: true },
-  { id: 'tour-4', type: 'tour', slug: 'hermanus-whale-watching', title: 'Hermanus Whale Watching', price: 880, priceUnit: 'person', rating: 4.9, reviewCount: 140, durationHours: 4, regionSlug: 'western-cape', pickupIncluded: true, guideIncluded: true },
+  { id: 'tour-1', type: 'tour', slug: 'stellenbosch-wine-experience', title: 'Stellenbosch Wine Experience', price: 1250, priceUnit: 'person', rating: 4.9, reviewCount: 220, durationHours: 8, regionSlug: 'western-cape', pickupIncluded: true, guideIncluded: true, coverUrl: '/images/IMG-20260823-WA0179.jpg' },
+  { id: 'tour-2', type: 'tour', slug: 'cape-peninsula-tour', title: 'Cape Peninsula Tour', price: 950, priceUnit: 'person', rating: 4.8, reviewCount: 310, durationHours: 9, regionSlug: 'western-cape', pickupIncluded: true, guideIncluded: true, coverUrl: '/images/IMG-20260823-WA0114.jpg' },
+  { id: 'tour-3', type: 'tour', slug: 'cape-town-walking-tour', title: 'Cape Town Walking Tour', price: 450, priceUnit: 'person', rating: 4.7, reviewCount: 96, durationHours: 3, regionSlug: 'western-cape', pickupIncluded: false, guideIncluded: true, coverUrl: '/images/IMG-20260823-WA0141.jpg' },
+  { id: 'tour-4', type: 'tour', slug: 'hermanus-whale-watching', title: 'Hermanus Whale Watching', price: 880, priceUnit: 'person', rating: 4.9, reviewCount: 140, durationHours: 4, regionSlug: 'western-cape', pickupIncluded: true, guideIncluded: true, coverUrl: '/images/IMG-20260823-WA0160.jpg' },
 ]
 
 export const mockStays: BookableProduct[] = [
-  { id: 'stay-1', type: 'stay', slug: 'cape-lodge', title: 'Cape Lodge', price: 1600, priceUnit: 'night', rating: 4.5, reviewCount: 78, regionSlug: 'western-cape' },
-  { id: 'stay-2', type: 'stay', slug: 'winelands-villa', title: 'Winelands Villa', price: 2400, priceUnit: 'night', rating: 4.8, reviewCount: 41, regionSlug: 'western-cape' },
+  { id: 'stay-1', type: 'stay', slug: 'cape-lodge', title: 'Cape Lodge', price: 1600, priceUnit: 'night', rating: 4.5, reviewCount: 78, regionSlug: 'western-cape', coverUrl: '/images/IMG-20260823-WA0192.jpg' },
+  { id: 'stay-2', type: 'stay', slug: 'winelands-villa', title: 'Winelands Villa', price: 2400, priceUnit: 'night', rating: 4.8, reviewCount: 41, regionSlug: 'western-cape', coverUrl: '/images/IMG-20260823-WA0184.jpg' },
 ]
 
 export const mockTransfers: BookableProduct[] = [
@@ -103,7 +137,7 @@ export const mockTransfers: BookableProduct[] = [
 ]
 
 export const mockExperiences: BookableProduct[] = [
-  { id: 'exp-1', type: 'experience', slug: 'cape-town-sunset-sail', title: 'Cape Town Sunset Sail', price: 720, priceUnit: 'person', rating: 4.9, reviewCount: 58, durationHours: 3, regionSlug: 'western-cape' },
+  { id: 'exp-1', type: 'experience', slug: 'cape-town-sunset-sail', title: 'Cape Town Sunset Sail', price: 720, priceUnit: 'person', rating: 4.9, reviewCount: 58, durationHours: 3, regionSlug: 'western-cape', coverUrl: '/images/IMG-20260823-WA0119.jpg' },
 ]
 
 export const mockBookings: Booking[] = [

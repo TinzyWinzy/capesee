@@ -1,22 +1,16 @@
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { DiscoveryCard, Icon, SearchBar, TourCard } from '@/components/ui'
 import { MapSurface } from '@/components/maps/MapSurface'
-import { mockTours } from '@/lib/mock'
+import { mockTours, heroGallery, photoReel } from '@/lib/mock'
 import { getNearbyDiscoveries } from '@/modules/discover/api/discoveries'
 import { useAuthStore } from '@/stores/auth'
 
-const CONTOURS = (
-  <svg className="contour-layer" viewBox="0 0 1440 760" preserveAspectRatio="none" aria-hidden>
-    <g fill="none" stroke="var(--color-cream)" strokeWidth="1">
-      <path d="M-40 520 C 260 470 380 560 620 510 S 980 430 1500 500" opacity="0.16" />
-      <path d="M-40 560 C 300 515 440 610 700 560 S 1060 480 1500 550" opacity="0.1" />
-      <path d="M-40 600 C 340 565 500 660 780 610 S 1140 530 1500 600" opacity="0.14" />
-      <path d="M-40 640 C 380 615 560 705 860 660 S 1220 580 1500 650" opacity="0.09" />
-      <path d="M900 120 C 1000 90 1120 130 1240 110 S 1400 140 1520 120" opacity="0.12" />
-      <path d="M1020 180 C 1100 160 1180 185 1280 170" opacity="0.09" />
-    </g>
-  </svg>
-)
+const MAP_MARKERS: Array<{ id: string; category: 'Place' | 'Traveler discovery' | 'Historical site'; lat: number; lng: number; label: string }> = [
+  { id: 'home-wine', category: 'Place', lat: -33.9364, lng: 18.8616, label: 'Wine farm' },
+  { id: 'home-sighting', category: 'Traveler discovery', lat: -33.987, lng: 18.431, label: 'New sighting' },
+  { id: 'home-heritage', category: 'Historical site', lat: -33.9259, lng: 18.4277, label: 'Heritage' },
+]
 
 const STAMP = (
   <div className="expedition-stamp" aria-hidden>
@@ -38,24 +32,60 @@ const STAMP = (
   </div>
 )
 
-const MAP_MARKERS: Array<{ id: string; category: 'Place' | 'Traveler discovery' | 'Historical site'; lat: number; lng: number; label: string }> = [
-  { id: 'home-wine', category: 'Place', lat: -33.9364, lng: 18.8616, label: 'Wine farm' },
-  { id: 'home-sighting', category: 'Traveler discovery', lat: -33.987, lng: 18.431, label: 'New sighting' },
-  { id: 'home-heritage', category: 'Historical site', lat: -33.9259, lng: 18.4277, label: 'Heritage' },
-]
-
-/** T01 — Landing / Discover Home. Wireframe spec §3. Bold Cape expedition. */
+/** T01 — Landing / Discover Home. Full-bleed hero with real Cape photography. */
 export function DiscoverHomePage() {
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
   const initials = user?.fullName?.charAt(0) ?? '?'
   const nearbyPins = getNearbyDiscoveries().slice(0, 2)
 
+  const [heroIndex, setHeroIndex] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroIndex((i) => (i + 1) % heroGallery.length)
+    }, 5500)
+    return () => clearInterval(timer)
+  }, [])
+
   return (
     <main className="discover-home">
-      <section className="discover-hero">
-        <div className="discover-atlas-lines" aria-hidden />
-        {CONTOURS}
+      {/* ── FULL-BLEED HERO with cycling Cape photography ── */}
+      <section className="discover-hero discover-hero--photo">
+        {/* Photo stack — only active slide visible, Ken Burns zoom */}
+        <div className="hero-photo-stack" aria-hidden>
+          {heroGallery.map((img, i) => (
+            <img
+              key={img.src}
+              src={img.src}
+              alt={img.alt}
+              className={`hero-photo-slide${i === heroIndex ? ' is-active' : ''}`}
+              draggable={false}
+            />
+          ))}
+          <div className="hero-photo-gradient" />
+        </div>
+
+        {/* Dots nav */}
+        <div className="hero-dots" role="tablist" aria-label="Photo slideshow">
+          {heroGallery.map((img, i) => (
+            <button
+              key={i}
+              type="button"
+              role="tab"
+              aria-selected={i === heroIndex}
+              aria-label={img.alt}
+              className={`hero-dot${i === heroIndex ? ' is-active' : ''}`}
+              onClick={() => setHeroIndex(i)}
+            />
+          ))}
+        </div>
+
+        {/* Caption */}
+        <p className="hero-photo-caption" aria-live="polite">
+          {heroGallery[heroIndex].alt}
+        </p>
+
         {STAMP}
 
         <div className="discover-mobile-brand mobile-only">
@@ -77,8 +107,20 @@ export function DiscoverHomePage() {
           </div>
           <div className="discover-primary-actions">
             <Link to="/discover/nearby" className="btn btn-flame">Explore nearby <Icon name="arrow" /></Link>
-            <Link to="/discover/map" className="discover-text-action">Open the living map <Icon name="arrow" /></Link>
+            <Link to="/discover/map" className="discover-text-action discover-text-action--light">Open the living map <Icon name="arrow" /></Link>
           </div>
+        </div>
+      </section>
+
+      {/* ── PHOTO REEL — infinite scrolling strip ── */}
+      <section className="photo-reel-section" aria-label="Field photographs from the Cape">
+        <div className="photo-reel-track">
+          {[...photoReel, ...photoReel].map((img, i) => (
+            <div key={`${img.src}-${i}`} className="photo-reel-item">
+              <img src={img.src} alt={img.alt} loading="lazy" />
+              <p className="photo-reel-caption">{img.alt}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -117,16 +159,56 @@ export function DiscoverHomePage() {
             </div>
             <aside className="about-note-card">
               <p className="eyebrow">Field note · Est. 2026</p>
-              <blockquote>“Built for travellers who want the real Cape — the one the postcards never show.”</blockquote>
+              <blockquote>"Built for travellers who want the real Cape — the one the postcards never show."</blockquote>
               <span className="about-note-coord">34°00′S · 18°28′E</span>
             </aside>
+          </div>
+        </section>
+
+        {/* ── PHOTO GRID — hand-picked Cape moments ── */}
+        <section className="discover-section photo-grid-section">
+          <div className="discover-section-heading">
+            <div>
+              <p className="eyebrow">No. 03 — From the field</p>
+              <h2>Moments captured across the Cape</h2>
+            </div>
+          </div>
+          <div className="photo-mosaic">
+            <div className="photo-mosaic-main">
+              <img src="/images/IMG-20260823-WA0153.jpg" alt="Chapman's Peak — Hout Bay lookout" loading="lazy" />
+              <span className="photo-mosaic-label">Chapman's Peak</span>
+            </div>
+            <div className="photo-mosaic-side">
+              <div className="photo-mosaic-item">
+                <img src="/images/IMG-20260823-WA0180.jpg" alt="Sunburst through the Winelands oaks" loading="lazy" />
+                <span className="photo-mosaic-label">Stellenbosch</span>
+              </div>
+              <div className="photo-mosaic-item">
+                <img src="/images/IMG-20260823-WA0141.jpg" alt="Camps Bay beach at dusk" loading="lazy" />
+                <span className="photo-mosaic-label">Camps Bay</span>
+              </div>
+            </div>
+            <div className="photo-mosaic-bottom">
+              <div className="photo-mosaic-item">
+                <img src="/images/IMG-20260823-WA0192.jpg" alt="Cape farmhouse lawn" loading="lazy" />
+                <span className="photo-mosaic-label">Wine Estate</span>
+              </div>
+              <div className="photo-mosaic-item">
+                <img src="/images/IMG-20260823-WA0119.jpg" alt="Golden hour sunset" loading="lazy" />
+                <span className="photo-mosaic-label">Sunset</span>
+              </div>
+              <div className="photo-mosaic-item">
+                <img src="/images/IMG-20260823-WA0173.jpg" alt="Suspension bridge at the estate" loading="lazy" />
+                <span className="photo-mosaic-label">Estate Walk</span>
+              </div>
+            </div>
           </div>
         </section>
 
         <section className="discover-section nearby-section">
           <div className="discover-section-heading">
             <div>
-              <p className="eyebrow">No. 03 — From the field</p>
+              <p className="eyebrow">No. 04 — From the field</p>
               <h2>Happening near you</h2>
             </div>
             <Link to="/discover/nearby" className="editorial-link">View nearby <span aria-hidden>→</span></Link>
@@ -146,7 +228,7 @@ export function DiscoverHomePage() {
       <section className="discover-section map-section">
         <div className="discover-section-heading">
           <div>
-            <p className="eyebrow">No. 04 — The living map</p>
+            <p className="eyebrow">No. 05 — The living map</p>
             <h2>The Cape, unfolding in real time</h2>
           </div>
           <Link to="/discover/map" className="editorial-link">Open map <span aria-hidden>→</span></Link>
@@ -155,7 +237,7 @@ export function DiscoverHomePage() {
           <div className="discover-map-heading">
             <div>
               <p className="eyebrow">Live discovery map</p>
-              <strong>What’s unfolding nearby</strong>
+              <strong>What's unfolding nearby</strong>
             </div>
             <span className="live-stamp"><span className="live-dot" aria-hidden />LIVE</span>
           </div>

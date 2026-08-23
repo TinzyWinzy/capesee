@@ -29,3 +29,7 @@ test-results
 *.sw?
 
 .vercel
+
+# Temp media source zips
+Capesee-20260823*
+
