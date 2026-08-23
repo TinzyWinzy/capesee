@@ -12,27 +12,8 @@ const MAP_MARKERS: Array<{ id: string; category: 'Place' | 'Traveler discovery' 
   { id: 'home-heritage', category: 'Historical site', lat: -33.9259, lng: 18.4277, label: 'Heritage' },
 ]
 
-const STAMP = (
-  <div className="expedition-stamp" aria-hidden>
-    <svg viewBox="0 0 120 120">
-      <defs>
-        <path id="stampCircle" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0" fill="none" />
-      </defs>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" strokeWidth="0.75" opacity="0.55" />
-      <text className="stamp-ring" fill="currentColor">
-        <textPath href="#stampCircle">FIELD GUIDE TO THE CAPE · EST. 2026 · 34°S 18°E ·</textPath>
-      </text>
-      <g stroke="currentColor" fill="none">
-        <line x1="60" y1="44" x2="60" y2="76" />
-        <line x1="44" y1="60" x2="76" y2="60" />
-        <circle cx="60" cy="60" r="3" fill="currentColor" stroke="none" />
-        <circle cx="60" cy="60" r="8.5" strokeWidth="0.75" />
-      </g>
-    </svg>
-  </div>
-)
-
 /** T01 — Landing / Discover Home. Full-bleed hero with real Cape photography. */
+
 export function DiscoverHomePage() {
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
@@ -50,9 +31,9 @@ export function DiscoverHomePage() {
 
   return (
     <main className="discover-home">
-      {/* ── FULL-BLEED HERO with cycling Cape photography ── */}
-      <section className="discover-hero discover-hero--photo">
-        {/* Photo stack — only active slide visible, Ken Burns zoom */}
+      {/* ── CLEAN FULL-BLEED HERO ── */}
+      <section className="discover-hero discover-hero--clean">
+        {/* Background photo stack with dark gradient overlay */}
         <div className="hero-photo-stack" aria-hidden>
           {heroGallery.map((img, i) => (
             <img
@@ -66,28 +47,6 @@ export function DiscoverHomePage() {
           <div className="hero-photo-gradient" />
         </div>
 
-        {/* Dots nav */}
-        <div className="hero-dots" role="tablist" aria-label="Photo slideshow">
-          {heroGallery.map((img, i) => (
-            <button
-              key={i}
-              type="button"
-              role="tab"
-              aria-selected={i === heroIndex}
-              aria-label={img.alt}
-              className={`hero-dot${i === heroIndex ? ' is-active' : ''}`}
-              onClick={() => setHeroIndex(i)}
-            />
-          ))}
-        </div>
-
-        {/* Caption */}
-        <p className="hero-photo-caption" aria-live="polite">
-          {heroGallery[heroIndex].alt}
-        </p>
-
-        {STAMP}
-
         <div className="discover-mobile-brand mobile-only">
           <Link to="/discover" className="brand">CAPE<span>SEE</span></Link>
           <Link to={user ? '/account/profile' : '/auth/login'} className="avatar" aria-label="Profile">{initials}</Link>
@@ -99,18 +58,41 @@ export function DiscoverHomePage() {
           <p className="discover-intro">
             Follow living discoveries, source-backed stories and memorable local experiences—all connected to place.
           </p>
+          
           <div className="discover-search">
             <SearchBar
-              placeholder="Search places, stories or experiences"
+              placeholder="Search places, stories or experiences..."
               onSubmit={(q) => navigate({ to: '/discover/search', search: { q } })}
             />
           </div>
+
           <div className="discover-primary-actions">
             <Link to="/discover/nearby" className="btn btn-flame">Explore nearby <Icon name="arrow" /></Link>
-            <Link to="/discover/map" className="discover-text-action discover-text-action--light">Open the living map <Icon name="arrow" /></Link>
+            <Link to="/discover/map" className="discover-text-action discover-text-action--light">Open living map <Icon name="arrow" /></Link>
           </div>
         </div>
+
+        {/* Clean bottom photo status bar */}
+        <div className="hero-status-bar">
+          <div className="hero-dots" role="tablist" aria-label="Photo slideshow">
+            {heroGallery.map((img, i) => (
+              <button
+                key={i}
+                type="button"
+                role="tab"
+                aria-selected={i === heroIndex}
+                aria-label={img.alt}
+                className={`hero-dot${i === heroIndex ? ' is-active' : ''}`}
+                onClick={() => setHeroIndex(i)}
+              />
+            ))}
+          </div>
+          <span className="hero-photo-label">
+            <span className="live-dot" aria-hidden /> {heroGallery[heroIndex].alt}
+          </span>
+        </div>
       </section>
+
 
       {/* ── PHOTO REEL — infinite scrolling strip ── */}
       <section className="photo-reel-section" aria-label="Field photographs from the Cape">

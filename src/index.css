@@ -1947,8 +1947,10 @@ h2.section-title { font-size: 20px; }
    Real-photo hero — cycling slideshow with Ken Burns zoom
    ============================================================ */
 
+.discover-hero--clean,
 .discover-hero--photo {
   background: var(--color-ink-deep);
+  position: relative;
 }
 
 .hero-photo-stack {
@@ -1967,8 +1969,7 @@ h2.section-title { font-size: 20px; }
   object-position: center;
   opacity: 0;
   transition: opacity 1.2s ease;
-  transform: scale(1.06);
-  animation: none;
+  transform: scale(1.04);
 }
 
 .hero-photo-slide.is-active {
@@ -1977,7 +1978,7 @@ h2.section-title { font-size: 20px; }
 }
 
 @keyframes kb-zoom {
-  from { transform: scale(1.08); }
+  from { transform: scale(1.06); }
   to   { transform: scale(1.0); }
 }
 
@@ -1985,22 +1986,33 @@ h2.section-title { font-size: 20px; }
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to right, rgba(11,33,30,0.82) 0%, rgba(11,33,30,0.44) 55%, rgba(11,33,30,0.18) 100%),
-    linear-gradient(to top,   rgba(11,33,30,0.72) 0%, transparent 52%);
+    linear-gradient(to right, rgba(11,33,30,0.88) 0%, rgba(11,33,30,0.65) 55%, rgba(11,33,30,0.30) 100%),
+    linear-gradient(to top,   rgba(11,33,30,0.85) 0%, transparent 60%);
 }
 
-/* Slideshow dots */
-.hero-dots {
+/* Bottom status bar in hero */
+.hero-status-bar {
   position: absolute;
-  bottom: 24px;
+  bottom: 20px;
   left: clamp(16px, 6vw, 96px);
+  right: clamp(16px, 6vw, 96px);
   z-index: 10;
   display: flex;
-  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(246,241,228,0.12);
+}
+
+.hero-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .hero-dot {
-  width: 28px;
+  width: 24px;
   height: 3px;
   border: none;
   border-radius: 2px;
@@ -2011,41 +2023,41 @@ h2.section-title { font-size: 20px; }
 }
 
 .hero-dot.is-active {
-  background: var(--color-cream);
-  width: 44px;
+  background: var(--color-brass);
+  width: 36px;
 }
 
-/* Photo caption bottom-right */
-.hero-photo-caption {
-  position: absolute;
-  bottom: 20px;
-  right: clamp(16px, 5vw, 80px);
-  z-index: 10;
-  margin: 0;
-  color: rgba(246,241,228,0.52);
+.hero-photo-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(246,241,228,0.65);
   font: 500 11px var(--font-mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  max-width: 280px;
-  text-align: right;
 }
 
-/* Override discover-hero::after dot grid on photo variant */
-.discover-hero--photo::after { opacity: 0.06; }
+.hero-photo-label .live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-flame);
+  box-shadow: 0 0 8px var(--color-flame);
+}
 
-/* Make text white on photo variant */
-.discover-hero--photo .discover-kicker { color: var(--color-brass); }
-.discover-hero--photo h1 em { color: var(--color-brass); }
-.discover-text-action--light { color: rgba(246,241,228,0.8); }
+/* Text overrides on hero clean */
+.discover-hero--clean .discover-kicker { color: var(--color-brass); }
+.discover-hero--clean h1 em { color: var(--color-brass); }
+.discover-text-action--light { color: rgba(246,241,228,0.82); }
 .discover-text-action--light:hover { color: var(--color-cream); }
 
 /* Ensure hero content sits above the photo stack */
-.discover-hero--photo .discover-hero-copy,
-.discover-hero--photo .discover-mobile-brand,
-.discover-hero--photo .expedition-stamp {
+.discover-hero--clean .discover-hero-copy,
+.discover-hero--clean .discover-mobile-brand {
   position: relative;
   z-index: 5;
 }
+
 
 /* ============================================================
    Photo reel — horizontally scrolling animated strip
