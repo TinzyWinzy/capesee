@@ -30,6 +30,11 @@ test-results
 
 .vercel
 
-# Temp media source zips
+# Temp media source zips + Drive downloads (duplicates of public/ assets)
 Capesee-20260823*
+Capesee-20260823T*
+drive-download*
+*.zip
+supabase/.temp/
+.tanstack/
 
