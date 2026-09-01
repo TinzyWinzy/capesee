@@ -28,6 +28,7 @@ import { Route as AdminDiscoveriesRouteImport } from './../routes/admin.discover
 import { Route as AdminGuidesRouteImport } from './../routes/admin.guides'
 import { Route as AdminHarvestRouteImport } from './../routes/admin.harvest'
 import { Route as AdminMediaRouteImport } from './../routes/admin.media'
+import { Route as AdminPastExperiencesRouteImport } from './../routes/admin.past-experiences'
 import { Route as AdminPaymentsRouteImport } from './../routes/admin.payments'
 import { Route as AdminPlacesRouteImport } from './../routes/admin.places'
 import { Route as AdminSettingsRouteImport } from './../routes/admin.settings'
@@ -62,11 +63,13 @@ import { Route as AppBookStaysRouteImport } from './../routes/_app.book.stays'
 import { Route as AppBookToursRouteImport } from './../routes/_app.book.tours'
 import { Route as AppBookTransfersRouteImport } from './../routes/_app.book.transfers'
 import { Route as AppDiscoverIndexRouteImport } from './../routes/_app.discover.index'
+import { Route as AppDiscoverGalleryRouteImport } from './../routes/_app.discover.gallery'
 import { Route as AppDiscoverMapRouteImport } from './../routes/_app.discover.map'
 import { Route as AppDiscoverNearbyRouteImport } from './../routes/_app.discover.nearby'
 import { Route as AppDiscoverPlacesRouteImport } from './../routes/_app.discover.places'
 import { Route as AppDiscoverRegionsRouteImport } from './../routes/_app.discover.regions'
 import { Route as AppDiscoverSearchRouteImport } from './../routes/_app.discover.search'
+import { Route as AppDiscoverStoriesRouteImport } from './../routes/_app.discover.stories'
 import { Route as AppJournalIndexRouteImport } from './../routes/_app.journal.index'
 import { Route as AppJournalCreateRouteImport } from './../routes/_app.journal.create'
 import { Route as AppJournalFeedRouteImport } from './../routes/_app.journal.feed'
@@ -80,6 +83,8 @@ import { Route as AdminBookingsBookingIdRouteImport } from './../routes/admin.bo
 import { Route as AdminCustomersCustomerIdRouteImport } from './../routes/admin.customers.$customerId'
 import { Route as AdminHarvestClaimIdRouteImport } from './../routes/admin.harvest.$claimId'
 import { Route as AdminHarvestQueueRouteImport } from './../routes/admin.harvest.queue'
+import { Route as AdminPastExperiencesExperienceIdRouteImport } from './../routes/admin.past-experiences.$experienceId'
+import { Route as AdminPastExperiencesNewRouteImport } from './../routes/admin.past-experiences.new'
 import { Route as AdminPlacesPlaceIdRouteImport } from './../routes/admin.places.$placeId'
 import { Route as AdminPlacesNewRouteImport } from './../routes/admin.places.new'
 import { Route as AdminStaysStayIdRouteImport } from './../routes/admin.stays.$stayId'
@@ -98,6 +103,7 @@ import { Route as AppBookTransfersTransferSlugRouteImport } from './../routes/_a
 import { Route as AppDiscoverPlacesIndexRouteImport } from './../routes/_app.discover.places.index'
 import { Route as AppDiscoverPlacesPlaceSlugRouteImport } from './../routes/_app.discover.places.$placeSlug'
 import { Route as AppDiscoverRegionsRegionSlugRouteImport } from './../routes/_app.discover.regions.$regionSlug'
+import { Route as AppDiscoverStoriesStoryIdRouteImport } from './../routes/_app.discover.stories.$storyId'
 import { Route as AppJournalPinPinIdRouteImport } from './../routes/_app.journal.pin.$pinId'
 import { Route as AppTripsBookingIdItineraryRouteImport } from './../routes/_app.trips.$bookingId.itinerary'
 import { Route as AppTripsBookingIdSupportRouteImport } from './../routes/_app.trips.$bookingId.support'
@@ -201,6 +207,11 @@ const AdminHarvestRoute = AdminHarvestRouteImport.update({
 const AdminMediaRoute = AdminMediaRouteImport.update({
   id: '/media',
   path: '/media',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPastExperiencesRoute = AdminPastExperiencesRouteImport.update({
+  id: '/past-experiences',
+  path: '/past-experiences',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
@@ -373,6 +384,11 @@ const AppDiscoverIndexRoute = AppDiscoverIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppDiscoverRoute,
 } as any)
+const AppDiscoverGalleryRoute = AppDiscoverGalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => AppDiscoverRoute,
+} as any)
 const AppDiscoverMapRoute = AppDiscoverMapRouteImport.update({
   id: '/map',
   path: '/map',
@@ -396,6 +412,11 @@ const AppDiscoverRegionsRoute = AppDiscoverRegionsRouteImport.update({
 const AppDiscoverSearchRoute = AppDiscoverSearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => AppDiscoverRoute,
+} as any)
+const AppDiscoverStoriesRoute = AppDiscoverStoriesRouteImport.update({
+  id: '/stories',
+  path: '/stories',
   getParentRoute: () => AppDiscoverRoute,
 } as any)
 const AppJournalIndexRoute = AppJournalIndexRouteImport.update({
@@ -463,6 +484,17 @@ const AdminHarvestQueueRoute = AdminHarvestQueueRouteImport.update({
   id: '/queue',
   path: '/queue',
   getParentRoute: () => AdminHarvestRoute,
+} as any)
+const AdminPastExperiencesExperienceIdRoute =
+  AdminPastExperiencesExperienceIdRouteImport.update({
+    id: '/$experienceId',
+    path: '/$experienceId',
+    getParentRoute: () => AdminPastExperiencesRoute,
+  } as any)
+const AdminPastExperiencesNewRoute = AdminPastExperiencesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminPastExperiencesRoute,
 } as any)
 const AdminPlacesPlaceIdRoute = AdminPlacesPlaceIdRouteImport.update({
   id: '/$placeId',
@@ -558,6 +590,12 @@ const AppDiscoverRegionsRegionSlugRoute =
     path: '/$regionSlug',
     getParentRoute: () => AppDiscoverRegionsRoute,
   } as any)
+const AppDiscoverStoriesStoryIdRoute =
+  AppDiscoverStoriesStoryIdRouteImport.update({
+    id: '/$storyId',
+    path: '/$storyId',
+    getParentRoute: () => AppDiscoverStoriesRoute,
+  } as any)
 const AppJournalPinPinIdRoute = AppJournalPinPinIdRouteImport.update({
   id: '/$pinId',
   path: '/$pinId',
@@ -636,6 +674,7 @@ export interface FileRoutesByFullPath {
   '/admin/guides': typeof AdminGuidesRoute
   '/admin/harvest': typeof AdminHarvestRouteWithChildren
   '/admin/media': typeof AdminMediaRoute
+  '/admin/past-experiences': typeof AdminPastExperiencesRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/places': typeof AdminPlacesRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
@@ -668,11 +707,13 @@ export interface FileRoutesByFullPath {
   '/book/stays': typeof AppBookStaysRouteWithChildren
   '/book/tours': typeof AppBookToursRouteWithChildren
   '/book/transfers': typeof AppBookTransfersRouteWithChildren
+  '/discover/gallery': typeof AppDiscoverGalleryRoute
   '/discover/map': typeof AppDiscoverMapRoute
   '/discover/nearby': typeof AppDiscoverNearbyRoute
   '/discover/places': typeof AppDiscoverPlacesRouteWithChildren
   '/discover/regions': typeof AppDiscoverRegionsRouteWithChildren
   '/discover/search': typeof AppDiscoverSearchRoute
+  '/discover/stories': typeof AppDiscoverStoriesRouteWithChildren
   '/journal/create': typeof AppJournalCreateRoute
   '/journal/feed': typeof AppJournalFeedRoute
   '/journal/map': typeof AppJournalMapRoute
@@ -684,6 +725,8 @@ export interface FileRoutesByFullPath {
   '/admin/customers/$customerId': typeof AdminCustomersCustomerIdRoute
   '/admin/harvest/$claimId': typeof AdminHarvestClaimIdRoute
   '/admin/harvest/queue': typeof AdminHarvestQueueRoute
+  '/admin/past-experiences/$experienceId': typeof AdminPastExperiencesExperienceIdRoute
+  '/admin/past-experiences/new': typeof AdminPastExperiencesNewRoute
   '/admin/places/$placeId': typeof AdminPlacesPlaceIdRoute
   '/admin/places/new': typeof AdminPlacesNewRoute
   '/admin/stays/$stayId': typeof AdminStaysStayIdRoute
@@ -701,6 +744,7 @@ export interface FileRoutesByFullPath {
   '/book/transfers/$transferSlug': typeof AppBookTransfersTransferSlugRoute
   '/discover/places/$placeSlug': typeof AppDiscoverPlacesPlaceSlugRouteWithChildren
   '/discover/regions/$regionSlug': typeof AppDiscoverRegionsRegionSlugRoute
+  '/discover/stories/$storyId': typeof AppDiscoverStoriesStoryIdRoute
   '/journal/pin/$pinId': typeof AppJournalPinPinIdRoute
   '/trips/$bookingId/itinerary': typeof AppTripsBookingIdItineraryRoute
   '/trips/$bookingId/support': typeof AppTripsBookingIdSupportRoute
@@ -731,6 +775,7 @@ export interface FileRoutesByTo {
   '/admin/guides': typeof AdminGuidesRoute
   '/admin/harvest': typeof AdminHarvestRouteWithChildren
   '/admin/media': typeof AdminMediaRoute
+  '/admin/past-experiences': typeof AdminPastExperiencesRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/places': typeof AdminPlacesRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
@@ -760,10 +805,12 @@ export interface FileRoutesByTo {
   '/account/saved': typeof AppAccountSavedRoute
   '/account/settings': typeof AppAccountSettingsRoute
   '/book/cart': typeof AppBookCartRoute
+  '/discover/gallery': typeof AppDiscoverGalleryRoute
   '/discover/map': typeof AppDiscoverMapRoute
   '/discover/nearby': typeof AppDiscoverNearbyRoute
   '/discover/regions': typeof AppDiscoverRegionsRouteWithChildren
   '/discover/search': typeof AppDiscoverSearchRoute
+  '/discover/stories': typeof AppDiscoverStoriesRouteWithChildren
   '/journal/create': typeof AppJournalCreateRoute
   '/journal/feed': typeof AppJournalFeedRoute
   '/journal/map': typeof AppJournalMapRoute
@@ -775,6 +822,8 @@ export interface FileRoutesByTo {
   '/admin/customers/$customerId': typeof AdminCustomersCustomerIdRoute
   '/admin/harvest/$claimId': typeof AdminHarvestClaimIdRoute
   '/admin/harvest/queue': typeof AdminHarvestQueueRoute
+  '/admin/past-experiences/$experienceId': typeof AdminPastExperiencesExperienceIdRoute
+  '/admin/past-experiences/new': typeof AdminPastExperiencesNewRoute
   '/admin/places/$placeId': typeof AdminPlacesPlaceIdRoute
   '/admin/places/new': typeof AdminPlacesNewRoute
   '/admin/stays/$stayId': typeof AdminStaysStayIdRoute
@@ -791,6 +840,7 @@ export interface FileRoutesByTo {
   '/book/tours/$tourSlug': typeof AppBookToursTourSlugRoute
   '/book/transfers/$transferSlug': typeof AppBookTransfersTransferSlugRoute
   '/discover/regions/$regionSlug': typeof AppDiscoverRegionsRegionSlugRoute
+  '/discover/stories/$storyId': typeof AppDiscoverStoriesStoryIdRoute
   '/journal/pin/$pinId': typeof AppJournalPinPinIdRoute
   '/trips/$bookingId/itinerary': typeof AppTripsBookingIdItineraryRoute
   '/trips/$bookingId/support': typeof AppTripsBookingIdSupportRoute
@@ -827,6 +877,7 @@ export interface FileRoutesById {
   '/admin/guides': typeof AdminGuidesRoute
   '/admin/harvest': typeof AdminHarvestRouteWithChildren
   '/admin/media': typeof AdminMediaRoute
+  '/admin/past-experiences': typeof AdminPastExperiencesRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/places': typeof AdminPlacesRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
@@ -860,11 +911,13 @@ export interface FileRoutesById {
   '/_app/book/stays': typeof AppBookStaysRouteWithChildren
   '/_app/book/tours': typeof AppBookToursRouteWithChildren
   '/_app/book/transfers': typeof AppBookTransfersRouteWithChildren
+  '/_app/discover/gallery': typeof AppDiscoverGalleryRoute
   '/_app/discover/map': typeof AppDiscoverMapRoute
   '/_app/discover/nearby': typeof AppDiscoverNearbyRoute
   '/_app/discover/places': typeof AppDiscoverPlacesRouteWithChildren
   '/_app/discover/regions': typeof AppDiscoverRegionsRouteWithChildren
   '/_app/discover/search': typeof AppDiscoverSearchRoute
+  '/_app/discover/stories': typeof AppDiscoverStoriesRouteWithChildren
   '/_app/journal/create': typeof AppJournalCreateRoute
   '/_app/journal/feed': typeof AppJournalFeedRoute
   '/_app/journal/map': typeof AppJournalMapRoute
@@ -876,6 +929,8 @@ export interface FileRoutesById {
   '/admin/customers/$customerId': typeof AdminCustomersCustomerIdRoute
   '/admin/harvest/$claimId': typeof AdminHarvestClaimIdRoute
   '/admin/harvest/queue': typeof AdminHarvestQueueRoute
+  '/admin/past-experiences/$experienceId': typeof AdminPastExperiencesExperienceIdRoute
+  '/admin/past-experiences/new': typeof AdminPastExperiencesNewRoute
   '/admin/places/$placeId': typeof AdminPlacesPlaceIdRoute
   '/admin/places/new': typeof AdminPlacesNewRoute
   '/admin/stays/$stayId': typeof AdminStaysStayIdRoute
@@ -893,6 +948,7 @@ export interface FileRoutesById {
   '/_app/book/transfers/$transferSlug': typeof AppBookTransfersTransferSlugRoute
   '/_app/discover/places/$placeSlug': typeof AppDiscoverPlacesPlaceSlugRouteWithChildren
   '/_app/discover/regions/$regionSlug': typeof AppDiscoverRegionsRegionSlugRoute
+  '/_app/discover/stories/$storyId': typeof AppDiscoverStoriesStoryIdRoute
   '/_app/journal/pin/$pinId': typeof AppJournalPinPinIdRoute
   '/_app/trips/$bookingId/itinerary': typeof AppTripsBookingIdItineraryRoute
   '/_app/trips/$bookingId/support': typeof AppTripsBookingIdSupportRoute
@@ -930,6 +986,7 @@ export interface FileRouteTypes {
     | '/admin/guides'
     | '/admin/harvest'
     | '/admin/media'
+    | '/admin/past-experiences'
     | '/admin/payments'
     | '/admin/places'
     | '/admin/settings'
@@ -962,11 +1019,13 @@ export interface FileRouteTypes {
     | '/book/stays'
     | '/book/tours'
     | '/book/transfers'
+    | '/discover/gallery'
     | '/discover/map'
     | '/discover/nearby'
     | '/discover/places'
     | '/discover/regions'
     | '/discover/search'
+    | '/discover/stories'
     | '/journal/create'
     | '/journal/feed'
     | '/journal/map'
@@ -978,6 +1037,8 @@ export interface FileRouteTypes {
     | '/admin/customers/$customerId'
     | '/admin/harvest/$claimId'
     | '/admin/harvest/queue'
+    | '/admin/past-experiences/$experienceId'
+    | '/admin/past-experiences/new'
     | '/admin/places/$placeId'
     | '/admin/places/new'
     | '/admin/stays/$stayId'
@@ -995,6 +1056,7 @@ export interface FileRouteTypes {
     | '/book/transfers/$transferSlug'
     | '/discover/places/$placeSlug'
     | '/discover/regions/$regionSlug'
+    | '/discover/stories/$storyId'
     | '/journal/pin/$pinId'
     | '/trips/$bookingId/itinerary'
     | '/trips/$bookingId/support'
@@ -1025,6 +1087,7 @@ export interface FileRouteTypes {
     | '/admin/guides'
     | '/admin/harvest'
     | '/admin/media'
+    | '/admin/past-experiences'
     | '/admin/payments'
     | '/admin/places'
     | '/admin/settings'
@@ -1054,10 +1117,12 @@ export interface FileRouteTypes {
     | '/account/saved'
     | '/account/settings'
     | '/book/cart'
+    | '/discover/gallery'
     | '/discover/map'
     | '/discover/nearby'
     | '/discover/regions'
     | '/discover/search'
+    | '/discover/stories'
     | '/journal/create'
     | '/journal/feed'
     | '/journal/map'
@@ -1069,6 +1134,8 @@ export interface FileRouteTypes {
     | '/admin/customers/$customerId'
     | '/admin/harvest/$claimId'
     | '/admin/harvest/queue'
+    | '/admin/past-experiences/$experienceId'
+    | '/admin/past-experiences/new'
     | '/admin/places/$placeId'
     | '/admin/places/new'
     | '/admin/stays/$stayId'
@@ -1085,6 +1152,7 @@ export interface FileRouteTypes {
     | '/book/tours/$tourSlug'
     | '/book/transfers/$transferSlug'
     | '/discover/regions/$regionSlug'
+    | '/discover/stories/$storyId'
     | '/journal/pin/$pinId'
     | '/trips/$bookingId/itinerary'
     | '/trips/$bookingId/support'
@@ -1120,6 +1188,7 @@ export interface FileRouteTypes {
     | '/admin/guides'
     | '/admin/harvest'
     | '/admin/media'
+    | '/admin/past-experiences'
     | '/admin/payments'
     | '/admin/places'
     | '/admin/settings'
@@ -1153,11 +1222,13 @@ export interface FileRouteTypes {
     | '/_app/book/stays'
     | '/_app/book/tours'
     | '/_app/book/transfers'
+    | '/_app/discover/gallery'
     | '/_app/discover/map'
     | '/_app/discover/nearby'
     | '/_app/discover/places'
     | '/_app/discover/regions'
     | '/_app/discover/search'
+    | '/_app/discover/stories'
     | '/_app/journal/create'
     | '/_app/journal/feed'
     | '/_app/journal/map'
@@ -1169,6 +1240,8 @@ export interface FileRouteTypes {
     | '/admin/customers/$customerId'
     | '/admin/harvest/$claimId'
     | '/admin/harvest/queue'
+    | '/admin/past-experiences/$experienceId'
+    | '/admin/past-experiences/new'
     | '/admin/places/$placeId'
     | '/admin/places/new'
     | '/admin/stays/$stayId'
@@ -1186,6 +1259,7 @@ export interface FileRouteTypes {
     | '/_app/book/transfers/$transferSlug'
     | '/_app/discover/places/$placeSlug'
     | '/_app/discover/regions/$regionSlug'
+    | '/_app/discover/stories/$storyId'
     | '/_app/journal/pin/$pinId'
     | '/_app/trips/$bookingId/itinerary'
     | '/_app/trips/$bookingId/support'
@@ -1344,6 +1418,13 @@ declare module '@tanstack/react-router' {
       path: '/media'
       fullPath: '/admin/media'
       preLoaderRoute: typeof AdminMediaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/past-experiences': {
+      id: '/admin/past-experiences'
+      path: '/past-experiences'
+      fullPath: '/admin/past-experiences'
+      preLoaderRoute: typeof AdminPastExperiencesRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/payments': {
@@ -1584,6 +1665,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDiscoverIndexRouteImport
       parentRoute: typeof AppDiscoverRoute
     }
+    '/_app/discover/gallery': {
+      id: '/_app/discover/gallery'
+      path: '/gallery'
+      fullPath: '/discover/gallery'
+      preLoaderRoute: typeof AppDiscoverGalleryRouteImport
+      parentRoute: typeof AppDiscoverRoute
+    }
     '/_app/discover/map': {
       id: '/_app/discover/map'
       path: '/map'
@@ -1617,6 +1705,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/discover/search'
       preLoaderRoute: typeof AppDiscoverSearchRouteImport
+      parentRoute: typeof AppDiscoverRoute
+    }
+    '/_app/discover/stories': {
+      id: '/_app/discover/stories'
+      path: '/stories'
+      fullPath: '/discover/stories'
+      preLoaderRoute: typeof AppDiscoverStoriesRouteImport
       parentRoute: typeof AppDiscoverRoute
     }
     '/_app/journal/': {
@@ -1709,6 +1804,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/harvest/queue'
       preLoaderRoute: typeof AdminHarvestQueueRouteImport
       parentRoute: typeof AdminHarvestRoute
+    }
+    '/admin/past-experiences/$experienceId': {
+      id: '/admin/past-experiences/$experienceId'
+      path: '/$experienceId'
+      fullPath: '/admin/past-experiences/$experienceId'
+      preLoaderRoute: typeof AdminPastExperiencesExperienceIdRouteImport
+      parentRoute: typeof AdminPastExperiencesRoute
+    }
+    '/admin/past-experiences/new': {
+      id: '/admin/past-experiences/new'
+      path: '/new'
+      fullPath: '/admin/past-experiences/new'
+      preLoaderRoute: typeof AdminPastExperiencesNewRouteImport
+      parentRoute: typeof AdminPastExperiencesRoute
     }
     '/admin/places/$placeId': {
       id: '/admin/places/$placeId'
@@ -1835,6 +1944,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/discover/regions/$regionSlug'
       preLoaderRoute: typeof AppDiscoverRegionsRegionSlugRouteImport
       parentRoute: typeof AppDiscoverRegionsRoute
+    }
+    '/_app/discover/stories/$storyId': {
+      id: '/_app/discover/stories/$storyId'
+      path: '/$storyId'
+      fullPath: '/discover/stories/$storyId'
+      preLoaderRoute: typeof AppDiscoverStoriesStoryIdRouteImport
+      parentRoute: typeof AppDiscoverStoriesRoute
     }
     '/_app/journal/pin/$pinId': {
       id: '/_app/journal/pin/$pinId'
@@ -2055,21 +2171,36 @@ const AppDiscoverRegionsRouteChildren: AppDiscoverRegionsRouteChildren = {
 const AppDiscoverRegionsRouteWithChildren =
   AppDiscoverRegionsRoute._addFileChildren(AppDiscoverRegionsRouteChildren)
 
+interface AppDiscoverStoriesRouteChildren {
+  AppDiscoverStoriesStoryIdRoute: typeof AppDiscoverStoriesStoryIdRoute
+}
+
+const AppDiscoverStoriesRouteChildren: AppDiscoverStoriesRouteChildren = {
+  AppDiscoverStoriesStoryIdRoute: AppDiscoverStoriesStoryIdRoute,
+}
+
+const AppDiscoverStoriesRouteWithChildren =
+  AppDiscoverStoriesRoute._addFileChildren(AppDiscoverStoriesRouteChildren)
+
 interface AppDiscoverRouteChildren {
+  AppDiscoverGalleryRoute: typeof AppDiscoverGalleryRoute
   AppDiscoverMapRoute: typeof AppDiscoverMapRoute
   AppDiscoverNearbyRoute: typeof AppDiscoverNearbyRoute
   AppDiscoverPlacesRoute: typeof AppDiscoverPlacesRouteWithChildren
   AppDiscoverRegionsRoute: typeof AppDiscoverRegionsRouteWithChildren
   AppDiscoverSearchRoute: typeof AppDiscoverSearchRoute
+  AppDiscoverStoriesRoute: typeof AppDiscoverStoriesRouteWithChildren
   AppDiscoverIndexRoute: typeof AppDiscoverIndexRoute
 }
 
 const AppDiscoverRouteChildren: AppDiscoverRouteChildren = {
+  AppDiscoverGalleryRoute: AppDiscoverGalleryRoute,
   AppDiscoverMapRoute: AppDiscoverMapRoute,
   AppDiscoverNearbyRoute: AppDiscoverNearbyRoute,
   AppDiscoverPlacesRoute: AppDiscoverPlacesRouteWithChildren,
   AppDiscoverRegionsRoute: AppDiscoverRegionsRouteWithChildren,
   AppDiscoverSearchRoute: AppDiscoverSearchRoute,
+  AppDiscoverStoriesRoute: AppDiscoverStoriesRouteWithChildren,
   AppDiscoverIndexRoute: AppDiscoverIndexRoute,
 }
 
@@ -2202,6 +2333,19 @@ const AdminHarvestRouteWithChildren = AdminHarvestRoute._addFileChildren(
   AdminHarvestRouteChildren,
 )
 
+interface AdminPastExperiencesRouteChildren {
+  AdminPastExperiencesExperienceIdRoute: typeof AdminPastExperiencesExperienceIdRoute
+  AdminPastExperiencesNewRoute: typeof AdminPastExperiencesNewRoute
+}
+
+const AdminPastExperiencesRouteChildren: AdminPastExperiencesRouteChildren = {
+  AdminPastExperiencesExperienceIdRoute: AdminPastExperiencesExperienceIdRoute,
+  AdminPastExperiencesNewRoute: AdminPastExperiencesNewRoute,
+}
+
+const AdminPastExperiencesRouteWithChildren =
+  AdminPastExperiencesRoute._addFileChildren(AdminPastExperiencesRouteChildren)
+
 interface AdminPlacesRouteChildren {
   AdminPlacesPlaceIdRoute: typeof AdminPlacesPlaceIdRoute
   AdminPlacesNewRoute: typeof AdminPlacesNewRoute
@@ -2251,6 +2395,7 @@ interface AdminRouteChildren {
   AdminGuidesRoute: typeof AdminGuidesRoute
   AdminHarvestRoute: typeof AdminHarvestRouteWithChildren
   AdminMediaRoute: typeof AdminMediaRoute
+  AdminPastExperiencesRoute: typeof AdminPastExperiencesRouteWithChildren
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminPlacesRoute: typeof AdminPlacesRouteWithChildren
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -2269,6 +2414,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminGuidesRoute: AdminGuidesRoute,
   AdminHarvestRoute: AdminHarvestRouteWithChildren,
   AdminMediaRoute: AdminMediaRoute,
+  AdminPastExperiencesRoute: AdminPastExperiencesRouteWithChildren,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminPlacesRoute: AdminPlacesRouteWithChildren,
   AdminSettingsRoute: AdminSettingsRoute,

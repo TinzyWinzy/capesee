@@ -711,6 +711,101 @@ export type Database = {
           },
         ]
       }
+      past_experiences: {
+        Row: {
+          id: string
+          provider_id: string | null
+          place_id: string | null
+          product_id: string | null
+          title: string
+          narrative: string
+          occurred_at: string
+          cover_url: string | null
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          provider_id?: string | null
+          place_id?: string | null
+          product_id?: string | null
+          title: string
+          narrative: string
+          occurred_at: string
+          cover_url?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          provider_id?: string | null
+          place_id?: string | null
+          product_id?: string | null
+          title?: string
+          narrative?: string
+          occurred_at?: string
+          cover_url?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "past_experiences_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "past_experiences_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      past_experience_media: {
+        Row: {
+          id: string
+          experience_id: string
+          kind: string
+          url: string
+          alt_text: string | null
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          experience_id: string
+          kind: string
+          url: string
+          alt_text?: string | null
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          experience_id?: string
+          kind?: string
+          url?: string
+          alt_text?: string | null
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "past_experience_media_experience_id_fkey"
+            columns: ["experience_id"]
+            isOneToOne: false
+            referencedRelation: "past_experiences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,16 +1,141 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { DiscoveryCard, Icon, SearchBar, TourCard } from '@/components/ui'
+import { IconWinePour, IconCompass, IconDiscovery } from '@/components/ui/AnimatedIcons'
 import { MapSurface } from '@/components/maps/MapSurface'
-import { mockTours, heroGallery, photoReel } from '@/lib/mock'
+import { mockTours } from '@/lib/mock'
+import { galleryImages } from '@/lib/gallery'
 import { getNearbyDiscoveries } from '@/modules/discover/api/discoveries'
 import { useAuthStore } from '@/stores/auth'
+
+const heroGallery = galleryImages.slice(0, 8)
+const photoReel = galleryImages
 
 const MAP_MARKERS: Array<{ id: string; category: 'Place' | 'Traveler discovery' | 'Historical site'; lat: number; lng: number; label: string }> = [
   { id: 'home-wine', category: 'Place', lat: -33.9364, lng: 18.8616, label: 'Wine farm' },
   { id: 'home-sighting', category: 'Traveler discovery', lat: -33.987, lng: 18.431, label: 'New sighting' },
   { id: 'home-heritage', category: 'Historical site', lat: -33.9259, lng: 18.4277, label: 'Heritage' },
 ]
+
+function CinematicBreak() {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [isPlaying, setIsPlaying] = useState(true)
+  const [canAutoplay, setCanAutoplay] = useState(true)
+  const [showPoster, setShowPoster] = useState(false)
+
+  useEffect(() => {
+    // Respect save-data / low bandwidth: don't autoplay video
+    const conn = (navigator as unknown as { connection?: { saveData?: boolean; effectiveType?: string } }).connection
+    if (conn?.saveData || conn?.effectiveType === '2g' || conn?.effectiveType === 'slow-2g') {
+      setCanAutoplay(false)
+      setIsPlaying(false)
+      setShowPoster(true)
+      return
+    }
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (media.matches) {
+      setCanAutoplay(false)
+      setIsPlaying(false)
+      return
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!canAutoplay || showPoster) return
+    const v = videoRef.current
+    if (!v) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) v.play().catch(() => {})
+        else v.pause()
+      },
+      { threshold: 0.35 },
+    )
+    io.observe(v)
+    return () => io.disconnect()
+  }, [canAutoplay, showPoster])
+
+  const toggle = () => {
+    const v = videoRef.current
+    if (!v || showPoster) return
+    if (v.paused) {
+      v.play().catch(() => {})
+      setIsPlaying(true)
+    } else {
+      v.pause()
+      setIsPlaying(false)
+    }
+  }
+
+  // poster fallback: Chapman's Peak hero
+  const posterSrc = galleryImages[9]?.src ?? '/images/IMG-20260823-WA0153.jpg'
+
+  return (
+    <section className="cinematic-break" aria-label="The Cape in motion — field video">
+      <div className="cinematic-media">
+        {!showPoster ? (
+          <video
+            ref={videoRef}
+            className="cinematic-video"
+            autoPlay={canAutoplay}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster={posterSrc}
+            aria-hidden
+            onError={() => setShowPoster(true)}
+          >
+            <source src="/videos/VID-20260823-WA0158.mp4" type="video/mp4" />
+          </video>
+        ) : (
+          <img className="cinematic-poster" src={posterSrc} alt="Chapman's Peak — field capture" loading="lazy" />
+        )}
+        <div className="cinematic-scrim" aria-hidden />
+        <div className="cinematic-grain" aria-hidden />
+      </div>
+
+      <div className="cinematic-overlay">
+        <p className="eyebrow cinematic-kicker">
+          <span className="live-dot" aria-hidden /> No. 02½ — In motion · Field video
+        </p>
+        <h2>
+          The Cape, <em>poured</em> in real light.
+        </h2>
+        <p className="cinematic-copy">
+          Not a stock reel. A single, uncut field capture — wind on the vineyard, light on the bay. Press play and stay a
+          moment. Then follow it to the living map.
+        </p>
+        <div className="cinematic-actions">
+          <Link to="/discover/gallery" className="btn btn-flame">
+            Watch all 15 field videos <Icon name="arrow" />
+          </Link>
+          <Link to="/discover/map" className="cinematic-text-action">
+            Open living map <Icon name="arrow" />
+          </Link>
+        </div>
+      </div>
+
+      <div className="cinematic-controls">
+        {!showPoster ? (
+          <button type="button" className="cinematic-toggle" onClick={toggle} aria-label={isPlaying ? 'Pause field video' : 'Play field video'}>
+            <span aria-hidden>{isPlaying ? '❙❙' : '▶'}</span>
+            {isPlaying ? 'Pause' : 'Play'}
+          </button>
+        ) : (
+          <button type="button" className="cinematic-toggle" onClick={() => setShowPoster(false)} aria-label="Load field video">
+            <span aria-hidden>▶</span> Load video
+          </button>
+        )}
+        <span className="cinematic-meta">VID-20260823-WA0158 · 16s · muted · 832×464</span>
+      </div>
+
+      <span className="cinematic-coord" aria-hidden>
+        33°55′S · 18°25′E
+      </span>
+    </section>
+  )
+}
 
 /** T01 — Landing / Discover Home. Full-bleed hero with real Cape photography. */
 
@@ -134,9 +259,9 @@ export function DiscoverHomePage() {
                 who have been there and the experiences of locals who know it best — no postcards, no guesswork.
               </p>
               <ul className="about-pillars">
-                <li><span>01</span><strong>Place</strong><small>Verified places, every one source-backed</small></li>
-                <li><span>02</span><strong>Living reports</strong><small>Traveler discoveries, dated and real</small></li>
-                <li><span>03</span><strong>Local experience</strong><small>Bookable experiences rooted in place</small></li>
+                <li><IconWinePour /><span>01</span><strong>Place</strong><small>Verified places, every one source-backed</small></li>
+                <li><IconCompass /><span>02</span><strong>Living reports</strong><small>Traveler discoveries, dated and real</small></li>
+                <li><IconDiscovery /><span>03</span><strong>Local experience</strong><small>Bookable experiences rooted in place</small></li>
               </ul>
             </div>
             <aside className="about-note-card">
@@ -147,50 +272,80 @@ export function DiscoverHomePage() {
           </div>
         </section>
 
-        {/* ── PHOTO GRID — hand-picked Cape moments ── */}
+        <CinematicBreak />
+
+        {/* ── PHOTO GRID — all field captures (84 images) — */}
         <section className="discover-section photo-grid-section">
           <div className="discover-section-heading">
             <div>
-              <p className="eyebrow">No. 03 — From the field</p>
+              <p className="eyebrow">No. 03 — From the field · {galleryImages.length} captures</p>
               <h2>Moments captured across the Cape</h2>
             </div>
+            <Link to="/discover/gallery" className="editorial-link">View full gallery <span aria-hidden>→</span></Link>
           </div>
           <div className="photo-mosaic">
             <div className="photo-mosaic-main">
-              <img src="/images/IMG-20260823-WA0153.jpg" alt="Chapman's Peak — Hout Bay lookout" loading="lazy" />
+              <img src={galleryImages[9]?.src ?? '/images/IMG-20260823-WA0153.jpg'} alt={galleryImages[9]?.alt ?? "Chapman's Peak — Hout Bay lookout"} loading="lazy" />
               <span className="photo-mosaic-label">Chapman's Peak</span>
             </div>
             <div className="photo-mosaic-side">
               <div className="photo-mosaic-item">
-                <img src="/images/IMG-20260823-WA0180.jpg" alt="Sunburst through the Winelands oaks" loading="lazy" />
+                <img src={galleryImages[5]?.src ?? '/images/IMG-20260823-WA0180.jpg'} alt={galleryImages[5]?.alt ?? 'Stellenbosch'} loading="lazy" />
                 <span className="photo-mosaic-label">Stellenbosch</span>
               </div>
               <div className="photo-mosaic-item">
-                <img src="/images/IMG-20260823-WA0141.jpg" alt="Camps Bay beach at dusk" loading="lazy" />
+                <img src={galleryImages[2]?.src ?? '/images/IMG-20260823-WA0141.jpg'} alt={galleryImages[2]?.alt ?? 'Camps Bay'} loading="lazy" />
                 <span className="photo-mosaic-label">Camps Bay</span>
               </div>
             </div>
             <div className="photo-mosaic-bottom">
               <div className="photo-mosaic-item">
-                <img src="/images/IMG-20260823-WA0192.jpg" alt="Cape farmhouse lawn" loading="lazy" />
+                <img src={galleryImages[28]?.src ?? '/images/IMG-20260823-WA0192.jpg'} alt={galleryImages[28]?.alt ?? 'Wine Estate'} loading="lazy" />
                 <span className="photo-mosaic-label">Wine Estate</span>
               </div>
               <div className="photo-mosaic-item">
-                <img src="/images/IMG-20260823-WA0119.jpg" alt="Golden hour sunset" loading="lazy" />
+                <img src={galleryImages[3]?.src ?? '/images/IMG-20260823-WA0119.jpg'} alt={galleryImages[3]?.alt ?? 'Sunset'} loading="lazy" />
                 <span className="photo-mosaic-label">Sunset</span>
               </div>
               <div className="photo-mosaic-item">
-                <img src="/images/IMG-20260823-WA0173.jpg" alt="Suspension bridge at the estate" loading="lazy" />
+                <img src={galleryImages[27]?.src ?? '/images/IMG-20260823-WA0173.jpg'} alt={galleryImages[27]?.alt ?? 'Estate Walk'} loading="lazy" />
                 <span className="photo-mosaic-label">Estate Walk</span>
               </div>
             </div>
+          </div>
+          <div className="text-center" style={{ marginTop: 16 }}>
+            <Link to="/discover/gallery" className="btn btn-outline">Browse all {galleryImages.length} photos & 15 videos</Link>
           </div>
         </section>
 
         <section className="discover-section nearby-section">
           <div className="discover-section-heading">
             <div>
-              <p className="eyebrow">No. 04 — From the field</p>
+              <p className="eyebrow">No. 04 — Stories from past tours</p>
+              <h2>The Cape, as it was lived</h2>
+            </div>
+            <Link to="/discover/stories" className="editorial-link">All stories <span aria-hidden>→</span></Link>
+          </div>
+          <div className="discover-card-row" style={{ gap: 16 }}>
+            <Link to="/discover/stories" className="card" style={{ flex: '1 1 280px', textDecoration: 'none' }}>
+              <img src={galleryImages[1]?.src} alt="Past story" style={{ width:'100%', height: 160, objectFit:'cover', borderRadius: 8 }} loading="lazy" />
+              <span className="bold text-small" style={{ marginTop: 8, display:'block' }}>Past experiences as stories</span>
+              <p className="text-faint text-xs">Client publishes a completed tour — narrative + gallery — optionally linked to the bookable product.</p>
+              <span className="editorial-link" style={{ marginTop: 8 }}>Read stories →</span>
+            </Link>
+            <Link to="/discover/gallery" className="card" style={{ flex: '1 1 280px', textDecoration: 'none' }}>
+              <img src={galleryImages[65]?.src ?? galleryImages[0].src} alt="Gallery" style={{ width:'100%', height: 160, objectFit:'cover', borderRadius: 8 }} loading="lazy" />
+              <span className="bold text-small" style={{ marginTop: 8, display:'block' }}>Field gallery · {galleryImages.length} photos</span>
+              <p className="text-faint text-xs">Every image showcased — browse the full masonry gallery with videos.</p>
+              <span className="editorial-link" style={{ marginTop: 8 }}>Open gallery →</span>
+            </Link>
+          </div>
+        </section>
+
+        <section className="discover-section nearby-section">
+          <div className="discover-section-heading">
+            <div>
+              <p className="eyebrow">No. 05 — From the field</p>
               <h2>Happening near you</h2>
             </div>
             <Link to="/discover/nearby" className="editorial-link">View nearby <span aria-hidden>→</span></Link>

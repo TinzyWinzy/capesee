@@ -125,3 +125,30 @@ export interface HarvestSource {
   excerpt: string
   kind: 'heritage_authority' | 'wikipedia' | 'archive' | 'book' | 'academic'
 }
+
+export interface PastExperienceMedia {
+  id: string
+  experienceId: string
+  kind: 'image' | 'video'
+  url: string
+  altText?: string
+  sortOrder: number
+}
+
+export interface PastExperience {
+  id: string
+  providerId?: string
+  placeId?: string
+  productId?: string
+  productSlug?: string
+  productType?: BookableType
+  placeSlug?: string
+  placeName?: string
+  title: string
+  narrative: string
+  occurredAt: string
+  coverUrl?: string
+  status: 'draft' | 'published' | 'archived'
+  createdAt: string
+  media: PastExperienceMedia[]
+}

@@ -44,6 +44,13 @@ The applied schema is tracked in `supabase/migrations/`; repeatable catalog cont
 
 The generated database contract lives in `src/types/database.generated.ts`. Regenerate it after every schema migration.
 
+### Storytelling engine (past experiences + gallery)
+
+- `src/lib/gallery.ts:1` is the manifest for all 84 photos in `public/images` + 15 videos in `public/videos` (20 new `IMG-20260901-WA0009–0028` already showcased on `/discover`, `/discover/gallery`, and Discover home No.03/N04).
+- Past experiences are archival stories: client creates a completed tour at `/admin/past-experiences` → publish → appears at `/discover/stories` and `/discover/stories/$storyId`, optionally linked to a bookable `products` row (shows "Book this experience" CTA via `src/modules/pastExperiences/api/pastExperiences.ts:1`).
+- Remote apply (no `supabase link` needed): paste `supabase/migrations/20260901120000_past_experiences_storytelling.sql` into Supabase Dashboard → SQL Editor → Run. See `supabase/APPLY_STORYTELLING_MIGRATION.md` for admin provisioning (`raw_app_meta_data {role:"admin"}`) and verification.
+- Until migration is applied, the app falls back to `src/lib/mockPastExperiences.ts:1` (2 published stories) and all gallery routes work offline.
+
 ## Production configuration
 
 Required:

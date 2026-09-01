@@ -22,6 +22,7 @@ const NAV: NavGroup[] = [
     links: [
       { to: '/admin/places', label: 'Places' },
       { to: '/admin/discoveries', label: 'Discoveries' },
+      { to: '/admin/past-experiences', label: 'Past Experiences' },
       { to: '/admin/timeline', label: 'Timeline' },
       { to: '/admin/harvest', label: 'Harvest Queue' },
       { to: '/admin/media', label: 'Media' },
