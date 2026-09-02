@@ -17,6 +17,66 @@ const MAP_MARKERS: Array<{ id: string; category: 'Place' | 'Traveler discovery' 
   { id: 'home-heritage', category: 'Historical site', lat: -33.9259, lng: 18.4277, label: 'Heritage' },
 ]
 
+interface FeaturedMoment {
+  id: string
+  title: string
+  location: string
+  coords: string
+  src: string
+  size: 'featured' | 'tall' | 'standard'
+}
+
+const FEATURED_MOMENTS: FeaturedMoment[] = [
+  {
+    id: 'chapmans-peak',
+    title: "Chapman's Peak Lookout",
+    location: 'Hout Bay',
+    coords: '34°05′S · 18°21′E',
+    src: galleryImages[0]?.src ?? '/images/IMG-20260823-WA0114.jpg',
+    size: 'featured',
+  },
+  {
+    id: 'camps-bay',
+    title: 'Camps Bay & Tidal Pools',
+    location: 'Atlantic Seaboard',
+    coords: '33°57′S · 18°22′E',
+    src: galleryImages[18]?.src ?? '/images/IMG-20260823-WA0141.jpg',
+    size: 'standard',
+  },
+  {
+    id: 'cape-peninsula',
+    title: 'Peninsula Sea Cliffs',
+    location: 'Cape Point',
+    coords: '34°21′S · 18°29′E',
+    src: galleryImages[24]?.src ?? '/images/IMG-20260823-WA0148.jpg',
+    size: 'standard',
+  },
+  {
+    id: 'suspension-bridge',
+    title: 'Mountain Suspension Bridge',
+    location: 'Stellenbosch Estate',
+    coords: '33°55′S · 18°55′E',
+    src: galleryImages[49]?.src ?? '/images/IMG-20260823-WA0173.jpg',
+    size: 'standard',
+  },
+  {
+    id: 'stellenbosch-vineyards',
+    title: 'Old Vines in Late Light',
+    location: 'Stellenbosch Valley',
+    coords: '33°56′S · 18°51′E',
+    src: galleryImages[54]?.src ?? '/images/IMG-20260823-WA0180.jpg',
+    size: 'standard',
+  },
+  {
+    id: 'winelands-estate',
+    title: 'Historic Manor & Grounds',
+    location: 'Franschhoek Valley',
+    coords: '33°54′S · 18°58′E',
+    src: galleryImages[63]?.src ?? '/images/IMG-20260823-WA0192.jpg',
+    size: 'standard',
+  },
+]
+
 function CinematicBreak() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isPlaying, setIsPlaying] = useState(true)
@@ -146,6 +206,7 @@ export function DiscoverHomePage() {
   const nearbyPins = getNearbyDiscoveries().slice(0, 2)
 
   const [heroIndex, setHeroIndex] = useState(0)
+  const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -153,6 +214,29 @@ export function DiscoverHomePage() {
     }, 5500)
     return () => clearInterval(timer)
   }, [])
+
+  // Keyboard navigation & scroll lock for Lightbox
+  useEffect(() => {
+    if (activeLightboxIndex === null) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActiveLightboxIndex(null)
+      else if (e.key === 'ArrowRight') {
+        setActiveLightboxIndex((prev) => (prev !== null && prev < FEATURED_MOMENTS.length - 1 ? prev + 1 : 0))
+      } else if (e.key === 'ArrowLeft') {
+        setActiveLightboxIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : FEATURED_MOMENTS.length - 1))
+      }
+    }
+
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = originalOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [activeLightboxIndex])
 
   return (
     <main className="discover-home">
@@ -274,8 +358,8 @@ export function DiscoverHomePage() {
 
         <CinematicBreak />
 
-        {/* ── PHOTO GRID — all field captures (84 images) — */}
-        <section className="discover-section photo-grid-section">
+        {/* ── EDITORIAL BENTO GRID — Moments captured across the Cape ── */}
+        <section className="discover-section moments-section">
           <div className="discover-section-heading">
             <div>
               <p className="eyebrow">No. 03 — From the field · {galleryImages.length} captures</p>
@@ -283,40 +367,106 @@ export function DiscoverHomePage() {
             </div>
             <Link to="/discover/gallery" className="editorial-link">View full gallery <span aria-hidden>→</span></Link>
           </div>
-          <div className="photo-mosaic">
-            <div className="photo-mosaic-main">
-              <img src={galleryImages[9]?.src ?? '/images/IMG-20260823-WA0153.jpg'} alt={galleryImages[9]?.alt ?? "Chapman's Peak — Hout Bay lookout"} loading="lazy" />
-              <span className="photo-mosaic-label">Chapman's Peak</span>
-            </div>
-            <div className="photo-mosaic-side">
-              <div className="photo-mosaic-item">
-                <img src={galleryImages[5]?.src ?? '/images/IMG-20260823-WA0180.jpg'} alt={galleryImages[5]?.alt ?? 'Stellenbosch'} loading="lazy" />
-                <span className="photo-mosaic-label">Stellenbosch</span>
-              </div>
-              <div className="photo-mosaic-item">
-                <img src={galleryImages[2]?.src ?? '/images/IMG-20260823-WA0141.jpg'} alt={galleryImages[2]?.alt ?? 'Camps Bay'} loading="lazy" />
-                <span className="photo-mosaic-label">Camps Bay</span>
-              </div>
-            </div>
-            <div className="photo-mosaic-bottom">
-              <div className="photo-mosaic-item">
-                <img src={galleryImages[28]?.src ?? '/images/IMG-20260823-WA0192.jpg'} alt={galleryImages[28]?.alt ?? 'Wine Estate'} loading="lazy" />
-                <span className="photo-mosaic-label">Wine Estate</span>
-              </div>
-              <div className="photo-mosaic-item">
-                <img src={galleryImages[3]?.src ?? '/images/IMG-20260823-WA0119.jpg'} alt={galleryImages[3]?.alt ?? 'Sunset'} loading="lazy" />
-                <span className="photo-mosaic-label">Sunset</span>
-              </div>
-              <div className="photo-mosaic-item">
-                <img src={galleryImages[27]?.src ?? '/images/IMG-20260823-WA0173.jpg'} alt={galleryImages[27]?.alt ?? 'Estate Walk'} loading="lazy" />
-                <span className="photo-mosaic-label">Estate Walk</span>
-              </div>
-            </div>
+
+          <div className="moments-bento-grid">
+            {FEATURED_MOMENTS.map((moment, idx) => (
+              <button
+                key={moment.id}
+                type="button"
+                className={`bento-card bento-card--${moment.size}`}
+                onClick={() => setActiveLightboxIndex(idx)}
+                aria-label={`View ${moment.title} in full screen`}
+              >
+                <div className="bento-media">
+                  <img src={moment.src} alt={moment.title} loading="lazy" />
+                  <div className="bento-scrim" />
+                </div>
+                <div className="bento-content">
+                  <div className="bento-top-meta">
+                    <span className="bento-location-pill">
+                      <span className="live-dot" aria-hidden />
+                      {moment.location}
+                    </span>
+                    <span className="bento-zoom-icon" aria-hidden>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="7" />
+                        <path d="m21 21-4.35-4.35" />
+                        <path d="M11 8v6M8 11h6" />
+                      </svg>
+                    </span>
+                  </div>
+                  <div className="bento-bottom-info">
+                    <h3 className="bento-title">{moment.title}</h3>
+                    <p className="bento-coord">{moment.coords}</p>
+                  </div>
+                </div>
+              </button>
+            ))}
           </div>
-          <div className="text-center" style={{ marginTop: 16 }}>
-            <Link to="/discover/gallery" className="btn btn-outline">Browse all {galleryImages.length} photos & 15 videos</Link>
+
+          <div className="text-center" style={{ marginTop: 24 }}>
+            <Link to="/discover/gallery" className="btn btn-outline">
+              Browse all {galleryImages.length} field photos & 15 videos
+            </Link>
           </div>
         </section>
+
+        {/* ── LIGHTBOX MODAL ── */}
+        {activeLightboxIndex !== null && (
+          <div
+            className="moment-lightbox-backdrop"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Field Capture Lightbox"
+            onClick={() => setActiveLightboxIndex(null)}
+          >
+            <div className="moment-lightbox-container" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                className="lightbox-btn lightbox-close"
+                onClick={() => setActiveLightboxIndex(null)}
+                aria-label="Close preview (Esc)"
+              >
+                ✕
+              </button>
+
+              <button
+                type="button"
+                className="lightbox-btn lightbox-prev"
+                onClick={() => setActiveLightboxIndex((prev) => (prev! > 0 ? prev! - 1 : FEATURED_MOMENTS.length - 1))}
+                aria-label="Previous capture (Left Arrow)"
+              >
+                ◀
+              </button>
+
+              <div className="lightbox-media-wrapper">
+                <img
+                  src={FEATURED_MOMENTS[activeLightboxIndex].src}
+                  alt={FEATURED_MOMENTS[activeLightboxIndex].title}
+                  className="lightbox-image"
+                />
+                <div className="lightbox-caption-bar">
+                  <div>
+                    <span className="lightbox-location-tag">
+                      {FEATURED_MOMENTS[activeLightboxIndex].location}
+                    </span>
+                    <h3 className="lightbox-title">{FEATURED_MOMENTS[activeLightboxIndex].title}</h3>
+                  </div>
+                  <span className="lightbox-coords">{FEATURED_MOMENTS[activeLightboxIndex].coords}</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="lightbox-btn lightbox-next"
+                onClick={() => setActiveLightboxIndex((prev) => (prev! < FEATURED_MOMENTS.length - 1 ? prev! + 1 : 0))}
+                aria-label="Next capture (Right Arrow)"
+              >
+                ▶
+              </button>
+            </div>
+          </div>
+        )}
 
         <section className="discover-section nearby-section">
           <div className="discover-section-heading">
