@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { Badge, Button, Card } from '@/components/ui'
 import { AdminInventoryPanel } from '@/modules/admin/components/AdminInventoryPanel'
-import { getProducts, updateProduct } from '@/modules/bookings/api/products'
+import { createProduct, getProducts, updateProduct, uploadProductCover } from '@/modules/bookings/api/products'
 
 interface ItineraryStop {
   key: number
@@ -21,10 +21,14 @@ let stopSeq = 0
 export function AdminTourEditorPage({ tourId }: { tourId?: string }) {
   const isEdit = Boolean(tourId && tourId !== 'new')
   const existing = isEdit ? getProducts('tour').find((t) => t.id === tourId) : undefined
+  const navigate = useNavigate()
 
   const [title, setTitle] = useState(existing?.title ?? '')
+  const [slug, setSlug] = useState(existing?.slug ?? '')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState(existing ? String(existing.price) : '')
+  const [duration, setDuration] = useState(existing?.durationHours ? String(existing.durationHours) : '8')
+  const [coverFile, setCoverFile] = useState<File | null>(null)
   const [stops, setStops] = useState<ItineraryStop[]>([{ key: stopSeq++, place: '', arrival: '', duration: '' }])
   const [busy, setBusy] = useState(false)
   const [status, setStatus] = useState<'idle' | 'saved' | 'error'>('idle')
@@ -35,17 +39,37 @@ export function AdminTourEditorPage({ tourId }: { tourId?: string }) {
     setStops((current) => current.map((stop) => (stop.key === key ? { ...stop, ...patch } : stop)))
 
   const save = async (nextStatus: 'draft' | 'published') => {
-    if (!isEdit) return
+    if (!title || !price) { setStatus('error'); setError('Title and price required'); return }
+    const slugFinal = (slug || title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')) as string
     setBusy(true)
     setStatus('idle')
     try {
-      await updateProduct(tourId as string, {
-        title,
-        description,
-        price: Number(price),
-        status: nextStatus === 'published' ? 'published' : 'draft',
-      })
-      setStatus('saved')
+      let coverUrl: string | undefined
+      if (coverFile) coverUrl = await uploadProductCover(coverFile)
+      if (isEdit) {
+        await updateProduct(tourId as string, {
+          title,
+          description,
+          price: Number(price),
+          status: nextStatus === 'published' ? 'published' : 'draft',
+        })
+        if (coverUrl) await updateProduct(tourId as string, { cover_url: coverUrl } as never)
+        setStatus('saved')
+      } else {
+        const id = await createProduct({
+          title,
+          slug: slugFinal,
+          description: description || title,
+          price: Number(price),
+          product_type: 'tour',
+          duration_hours: duration ? Number(duration) : null,
+        })
+        if (coverUrl) await updateProduct(id, { cover_url: coverUrl } as never)
+        // optionally set status
+        if (nextStatus === 'published') await updateProduct(id, { status: 'published' })
+        setStatus('saved')
+        navigate({ to: '/admin/tours/$tourId', params: { tourId: id } })
+      }
     } catch (saveError) {
       setStatus('error')
       setError(saveError instanceof Error ? saveError.message : 'Save failed.')
@@ -71,9 +95,15 @@ export function AdminTourEditorPage({ tourId }: { tourId?: string }) {
         <span className="eyebrow">Basic Information</span>
         <div className="grid-2">
           <label>
-            <span className="label">Title</span>
-            <input className="input" placeholder="Stellenbosch Wine Experience" value={title} onChange={(event) => setTitle(event.target.value)} />
+            <span className="label">Title *</span>
+            <input className="input" placeholder="Stellenbosch Wine Experience" value={title} onChange={(event) => { setTitle(event.target.value); if (!isEdit && !slug) setSlug(event.target.value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')) }} />
           </label>
+          <label>
+            <span className="label">Slug *</span>
+            <input className="input" placeholder="stellenbosch-wine-experience" value={slug} onChange={(event) => setSlug(event.target.value)} />
+          </label>
+        </div>
+        <div className="grid-2">
           <label>
             <span className="label">Region</span>
             <select className="select" defaultValue="Western Cape">
@@ -81,14 +111,18 @@ export function AdminTourEditorPage({ tourId }: { tourId?: string }) {
               <option>Eastern Cape</option>
             </select>
           </label>
+          <label>
+            <span className="label">Duration (hours)</span>
+            <input className="input" type="number" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="8" />
+          </label>
         </div>
         <label>
-          <span className="label">Type</span>
-          <input className="input" placeholder="Wine tour" />
+          <span className="label">Description</span>
+          <textarea className="textarea" value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Guided day shaped by the places along the way." />
         </label>
         <label>
-          <span className="label">Description</span>
-          <textarea className="textarea" value={description} onChange={(event) => setDescription(event.target.value)} />
+          <span className="label">Cover image</span>
+          <input className="input" type="file" accept="image/*" onChange={(e) => setCoverFile(e.target.files?.[0] ?? null)} />
         </label>
       </Card>
 
@@ -152,20 +186,14 @@ export function AdminTourEditorPage({ tourId }: { tourId?: string }) {
         ))}
       </Card>
 
-      {isEdit ? (
-        <div className="row">
-          <Button variant="outline" disabled={busy} onClick={() => void save('draft')}>
-            {busy ? 'Saving…' : 'Save Draft'}
-          </Button>
-          <Button variant="primary" disabled={busy} onClick={() => void save('published')}>
-            {busy ? 'Saving…' : 'Publish'}
-          </Button>
-        </div>
-      ) : (
-        <p className="alert" role="note">
-          New tours can't be persisted yet — product creation ships in Sprint 4. Editing an existing tour saves live.
-        </p>
-      )}
+      <div className="row">
+        <Button variant="outline" disabled={busy} onClick={() => void save('draft')}>
+          {busy ? 'Saving…' : 'Save Draft'}
+        </Button>
+        <Button variant="primary" disabled={busy} onClick={() => void save('published')}>
+          {busy ? 'Saving…' : isEdit ? 'Publish' : 'Create & Publish'}
+        </Button>
+      </div>
     </div>
   )
 }

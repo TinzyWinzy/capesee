@@ -3,7 +3,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Badge, Button, Card, EmptyState, ErrorState, SkeletonCard } from '@/components/ui'
 import { formatDate, formatRand } from '@/lib/format'
 import { useAsyncData } from '@/lib/useAsyncData'
-import { getProducts } from '@/modules/bookings/api/products'
+import { fetchProducts, getProducts } from '@/modules/bookings/api/products'
 import { getPlaces } from '@/modules/places/api/places'
 import { getMyBookings, fetchMyBookings } from '@/modules/bookings/api/orders'
 import { AdminInventoryPanel } from '@/modules/admin/components/AdminInventoryPanel'
@@ -16,14 +16,31 @@ import {
 import { getSupabase } from '@/services/supabase/client'
 import { isPaymentSimulationEnabled } from '@/services/payments/paynow'
 
-/** Admin stays list. */
+/** Admin stays list — live with create. */
 export function AdminStaysPage() {
-  const stays = getProducts('stay')
+  const hasSupabase = Boolean(getSupabase())
+  const { data: live, loading } = useAsyncData(() => hasSupabase ? fetchProducts('stay') : Promise.resolve(getProducts('stay')), [])
+  const stays = (live ?? getProducts('stay')) as ReturnType<typeof getProducts>
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<string | null>(null)
+  const createStay = async () => {
+    if (!hasSupabase) { setMsg('Supabase not configured'); return }
+    setBusy(true)
+    try {
+      const { createProduct } = await import('@/modules/bookings/api/products')
+      const id = await createProduct({ title: `New Stay ${new Date().toLocaleDateString()}`, slug: `new-stay-${Date.now()}`, description: 'Draft stay — edit to publish', price: 1200, product_type: 'stay' })
+      window.location.href = `/admin/stays/${id}`
+    } catch (e) { setMsg(String((e as Error).message)) } finally { setBusy(false) }
+  }
   return (
     <div className="stack">
       <div className="admin-panel-head">
         <h1>Stays</h1>
-        <span>{stays.length} properties</span>
+        <span>{stays.length} properties {loading ? '· loading' : ''}</span>
+      </div>
+      {msg ? <p className="alert" role="status">{msg}</p> : null}
+      <div className="row" style={{ justifyContent: 'flex-end' }}>
+        <Button variant="primary" size="sm" onClick={createStay} disabled={busy}>{busy ? 'Creating…' : '+ New Stay'}</Button>
       </div>
       <div className="grid-2">
         {stays.map((s) => (
@@ -42,14 +59,32 @@ export function AdminStaysPage() {
   )
 }
 
-/** Admin transfers list. */
+/** Admin transfers list — live with create. */
 export function AdminTransfersPage() {
-  const transfers = getProducts('transfer')
+  const hasSupabase = Boolean(getSupabase())
+  const { data: live, loading } = useAsyncData(() => hasSupabase ? fetchProducts('transfer') : Promise.resolve(getProducts('transfer')), [])
+  const transfers = (live ?? getProducts('transfer')) as ReturnType<typeof getProducts>
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<string | null>(null)
+  const createTransfer = async () => {
+    if (!hasSupabase) { setMsg('Supabase not configured'); return }
+    setBusy(true)
+    try {
+      const { createProduct } = await import('@/modules/bookings/api/products')
+      await createProduct({ title: `New Transfer ${new Date().toLocaleDateString()}`, slug: `new-transfer-${Date.now()}`, description: 'Draft transfer — edit to publish', price: 600, product_type: 'transfer' })
+      setMsg('Transfer draft created — refresh to see it')
+      window.location.reload()
+    } catch (e) { setMsg(String((e as Error).message)) } finally { setBusy(false) }
+  }
   return (
     <div className="stack">
       <div className="admin-panel-head">
         <h1>Transfers</h1>
-        <span>{transfers.length} services</span>
+        <span>{transfers.length} services {loading ? '· loading' : ''}</span>
+      </div>
+      {msg ? <p className="alert" role="status">{msg}</p> : null}
+      <div className="row" style={{ justifyContent: 'flex-end' }}>
+        <Button variant="primary" size="sm" onClick={createTransfer} disabled={busy}>{busy ? 'Creating…' : '+ New Transfer'}</Button>
       </div>
       <div className="grid-2">
         {transfers.map((t) => (
@@ -66,32 +101,42 @@ export function AdminTransfersPage() {
   )
 }
 
-/** Admin guides list. */
+/** Admin guides list. Live from profiles with fallback. */
 export function AdminGuidesPage() {
+  const { data: guides, loading, error } = useAsyncData(() => fetchStaffProfiles(), [])
+  const hasSupabase = Boolean(getSupabase())
+
   return (
     <div className="stack">
       <div className="admin-panel-head">
         <h1>Guides</h1>
-        <span>Roster</span>
+        <span>{hasSupabase ? `${guides?.length ?? 0} roster` : 'Roster (mock)'}</span>
       </div>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Role</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td className="bold text-small">Mike K</td>
-            <td>guide</td>
-            <td>
-              <Badge tone="success">Active</Badge>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {loading ? <SkeletonCard lines={3} /> : null}
+      {error ? <p className="alert alert-error" role="alert">{error.message}</p> : null}
+      {!loading && !error ? (
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Contact</th>
+              <th>Joined</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(guides && guides.length > 0 ? guides : [{ id: 'mock-mike', fullName: 'Mike K', phone: null, createdAt: new Date().toISOString() }]).map((g) => (
+              <tr key={g.id}>
+                <td className="bold text-small">{g.fullName}</td>
+                <td className="text-small">{g.phone ?? '—'}</td>
+                <td className="text-small">{formatDate(g.createdAt)}</td>
+                <td><Badge tone="success">Active</Badge></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : null}
+      {!hasSupabase ? <p className="text-faint text-xs" style={{ marginTop: 8 }}>Live roster requires Supabase — showing mock fallback.</p> : null}
     </div>
   )
 }
@@ -145,16 +190,70 @@ export function AdminCustomersPage() {
   )
 }
 
-/** Admin media library. */
+/** Admin media library — upload to place-media bucket + place_media table. */
 export function AdminMediaPage() {
+  const places = getPlaces()
+  const [placeId, setPlaceId] = useState<string>(places[0]?.id ?? '')
+  const [file, setFile] = useState<File | null>(null)
+  const [alt, setAlt] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<string | null>(null)
+
+  const upload = async () => {
+    if (!file || !placeId) { setMsg('Choose a place and file'); return }
+    if (!getSupabase()) { setMsg('Supabase not configured — upload is mock'); return }
+    setBusy(true); setMsg(null)
+    try {
+      const supa = getSupabase()!
+      const ext = file.name.split('.').pop() ?? 'jpg'
+      const key = `places/${placeId}/${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`
+      let bucket = 'place-media'
+      let { error } = await supa.storage.from(bucket).upload(key, file, { contentType: file.type })
+      if (error && error.message.includes('Bucket not found')) {
+        // fallback to public bucket if needed
+        bucket = 'place-media'
+        throw error
+      }
+      if (error) throw error
+      const { data: urlData } = supa.storage.from(bucket).getPublicUrl(key)
+      const { error: dbErr } = await supa.from('place_media').insert({ place_id: placeId, kind: 'image', url: urlData.publicUrl, alt_text: alt || null, status: 'published' })
+      if (dbErr) throw dbErr
+      setMsg(`Uploaded to ${bucket}/${key}`)
+      setFile(null); setAlt('')
+    } catch (e) { setMsg(String((e as Error).message)) } finally { setBusy(false) }
+  }
+
   return (
     <div className="stack">
       <div className="admin-panel-head">
         <h1>Media</h1>
-        <span>Library</span>
+        <span>Library — upload to Supabase Storage</span>
       </div>
+      <Card className="stack">
+        <span className="eyebrow">Upload</span>
+        {msg ? <p className="alert" role="status">{msg}</p> : null}
+        <div className="grid-2">
+          <label>
+            <span className="label">Place *</span>
+            <select className="select" value={placeId} onChange={e => setPlaceId(e.target.value)}>
+              {places.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </label>
+          <label>
+            <span className="label">Alt text</span>
+            <input className="input" value={alt} onChange={e => setAlt(e.target.value)} placeholder="Hout Bay panorama — field capture" />
+          </label>
+        </div>
+        <label>
+          <span className="label">File *</span>
+          <input className="input" type="file" accept="image/*,video/*" onChange={e => setFile(e.target.files?.[0] ?? null)} />
+        </label>
+        <div className="row" style={{ justifyContent: 'flex-end' }}>
+          <Button variant="primary" onClick={upload} disabled={busy || !file}>{busy ? 'Uploading…' : 'Upload'}</Button>
+        </div>
+      </Card>
       <div className="grid-3">
-        {getPlaces().map((p) => (
+        {places.map((p) => (
           <div key={p.id} className="media ratio-4-3">
             <span className="text-xs">{p.name}</span>
           </div>

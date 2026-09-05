@@ -113,3 +113,45 @@ export async function updateProduct(
   const { error } = await supabase.from('products').update(update).eq('id', id)
   if (error) throw error
 }
+
+export async function createProduct(input: { title: string; slug: string; description: string; price: number; product_type: BookableType; regionSlug?: string; price_unit?: string; duration_hours?: number | null }): Promise<string> {
+  const supabase = getSupabase()
+  if (!supabase) throw new Error('Supabase required to create products')
+  const regionSlug = input.regionSlug ?? 'western-cape'
+  const { data: region, error: rErr } = await supabase.from('regions').select('id').eq('slug', regionSlug).maybeSingle()
+  if (rErr) throw rErr
+  if (!region) throw new Error(`Region "${regionSlug}" not found`)
+  const { data: userData } = await supabase.auth.getUser()
+  const providerId = userData.user?.id ?? null
+  const { data, error } = await supabase.from('products').insert({
+    title: input.title,
+    slug: input.slug,
+    description: input.description || input.title,
+    price: input.price,
+    product_type: input.product_type,
+    region_id: region.id,
+    price_unit: input.price_unit ?? (input.product_type === 'stay' ? 'night' : input.product_type === 'transfer' ? 'trip' : 'person'),
+    duration_hours: input.duration_hours ?? null,
+    provider_id: providerId,
+    status: 'draft',
+  }).select('id').single()
+  if (error) throw error
+  return data.id
+}
+
+export async function uploadProductCover(file: File): Promise<string> {
+  const supabase = getSupabase()
+  if (!supabase) throw new Error('Supabase required for upload')
+  const ext = file.name.split('.').pop() ?? 'jpg'
+  const key = `products/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`
+  // try product-images bucket, fallback to place-media
+  let bucket = 'product-images'
+  let { error } = await supabase.storage.from(bucket).upload(key, file, { contentType: file.type })
+  if (error && error.message.includes('Bucket not found')) {
+    bucket = 'place-media'
+    const retry = await supabase.storage.from(bucket).upload(key, file, { contentType: file.type })
+    if (retry.error) throw retry.error
+  } else if (error) throw error
+  const { data } = supabase.storage.from(bucket).getPublicUrl(key)
+  return data.publicUrl
+}

@@ -131,3 +131,61 @@ export async function fetchStaffProfiles(): Promise<StaffProfile[]> {
     createdAt: profile.created_at,
   }))
 }
+
+export interface AdminBookingRow {
+  id: string
+  code: string
+  status: string
+  total: number
+  travelerId: string
+  travelerName: string
+  guideId: string | null
+  startsAt: string
+  endsAt: string
+  createdAt: string
+}
+
+export async function fetchAdminBookings(opts?: { status?: string; query?: string; limit?: number; offset?: number }): Promise<AdminBookingRow[]> {
+  const supabase = getSupabase()
+  if (!supabase) return []
+  let q = supabase.from('bookings').select('id, code, status, total, traveler_id, traveler_details, assigned_guide_id, starts_at, ends_at, created_at').order('created_at', { ascending: false })
+  if (opts?.status && opts.status !== 'All') q = q.eq('status', opts.status)
+  if (opts?.limit) q = q.limit(opts.limit)
+  if (opts?.offset) q = q.range(opts.offset, opts.offset + (opts.limit ?? 20) - 1)
+  const { data, error } = await q
+  if (error) throw error
+  let rows = (data ?? []).map((b) => {
+    const details = (b.traveler_details ?? {}) as Record<string, unknown>
+    return {
+      id: b.id,
+      code: b.code,
+      status: b.status,
+      total: b.total,
+      travelerId: b.traveler_id,
+      travelerName: typeof details.fullName === 'string' ? details.fullName : (typeof details.full_name === 'string' ? details.full_name : 'Traveler'),
+      guideId: b.assigned_guide_id,
+      startsAt: b.starts_at,
+      endsAt: b.ends_at,
+      createdAt: b.created_at,
+    } as AdminBookingRow
+  })
+  if (opts?.query) {
+    const needle = opts.query.toLowerCase()
+    rows = rows.filter(r => r.code.toLowerCase().includes(needle) || r.travelerName.toLowerCase().includes(needle))
+  }
+  return rows
+}
+
+export async function updateBookingGuide(bookingId: string, guideId: string | null): Promise<void> {
+  const supabase = getSupabase()
+  if (!supabase) throw new Error('Supabase required')
+  const { error } = await supabase.from('bookings').update({ assigned_guide_id: guideId }).eq('id', bookingId)
+  if (error) throw error
+}
+
+export async function updateBookingStatus(bookingId: string, status: string): Promise<void> {
+  const supabase = getSupabase()
+  if (!supabase) throw new Error('Supabase required')
+  const { error } = await supabase.from('bookings').update({ status }).eq('id', bookingId)
+  if (error) throw error
+}

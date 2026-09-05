@@ -98,3 +98,37 @@ export async function fetchTimeline(): Promise<TimelineEvent[]> {
     status: event.status,
   }))
 }
+
+export async function createPlace(input: { name: string; slug: string; regionSlug: string; place_type: string; location_name: string; latitude: number; longitude: number; description: string; summary: string; cover_url?: string | null }): Promise<string> {
+  const supabase = getSupabase()
+  if (!supabase) throw new Error('Supabase required to create places')
+  const { data: region, error: rErr } = await supabase.from('regions').select('id').eq('slug', input.regionSlug).maybeSingle()
+  if (rErr) throw rErr
+  if (!region) throw new Error(`Region "${input.regionSlug}" not found — seed regions first`)
+  const { data, error } = await supabase.from('places').insert({
+    name: input.name,
+    slug: input.slug,
+    region_id: region.id,
+    place_type: input.place_type,
+    location_name: input.location_name,
+    latitude: input.latitude,
+    longitude: input.longitude,
+    description: input.description,
+    summary: input.summary,
+    cover_url: input.cover_url ?? null,
+    status: 'draft',
+  }).select('id').single()
+  if (error) throw error
+  return data.id
+}
+
+export async function uploadPlaceCover(file: File): Promise<string> {
+  const supabase = getSupabase()
+  if (!supabase) throw new Error('Supabase required for upload')
+  const ext = file.name.split('.').pop() ?? 'jpg'
+  const key = `places/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`
+  const { error } = await supabase.storage.from('place-media').upload(key, file, { contentType: file.type })
+  if (error) throw error
+  const { data } = supabase.storage.from('place-media').getPublicUrl(key)
+  return data.publicUrl
+}
