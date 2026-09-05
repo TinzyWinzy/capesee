@@ -8,17 +8,17 @@ create extension if not exists earthdistance cascade;
 alter table public.places add column if not exists geom geometry(Point, 4326);
 
 update public.places
-set geom = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)
+set geom = public.ST_SetSRID(public.ST_MakePoint(longitude, latitude), 4326)
 where geom is null;
 
 create index if not exists places_geom_gix on public.places using gist (geom);
-create index if not exists discoveries_geom_gix on public.discoveries using gist (ST_SetSRID(ST_MakePoint(longitude, latitude),4326));
+create index if not exists discoveries_geom_gix on public.discoveries using gist (public.ST_SetSRID(public.ST_MakePoint(longitude, latitude),4326));
 
 -- Keep geom in sync
 create or replace function public.places_set_geom()
-returns trigger language plpgsql set search_path = '' as $$
+returns trigger language plpgsql set search_path = 'public, pg_catalog' as $$
 begin
-  new.geom := ST_SetSRID(ST_MakePoint(new.longitude, new.latitude), 4326);
+  new.geom := public.ST_SetSRID(public.ST_MakePoint(new.longitude, new.latitude), 4326);
   return new;
 end; $$;
 
@@ -43,7 +43,7 @@ returns table (
   slug text,
   place_type text
 )
-language sql stable set search_path = '' as $$
+language sql stable set search_path = 'public, pg_catalog' as $$
   with params as (
     select
       case
@@ -54,16 +54,16 @@ language sql stable set search_path = '' as $$
       end as grid
   ),
   bounds as (
-    select ST_MakeEnvelope(min_lng, min_lat, max_lng, max_lat, 4326) as env
+    select public.ST_MakeEnvelope(min_lng, min_lat, max_lng, max_lat, 4326) as env
   ),
   grid as (
     select
-      ST_SnapToGrid(p.geom, (select grid from params)) as cell,
+      public.ST_SnapToGrid(p.geom, (select grid from params)) as cell,
       count(*)::int as cnt,
-      avg(ST_Y(p.geom)) as avg_lat,
-      avg(ST_X(p.geom)) as avg_lng
+      avg(public.ST_Y(p.geom)) as avg_lat,
+      avg(public.ST_X(p.geom)) as avg_lng
     from public.places p, bounds
-    where p.status = 'published' and ST_Within(p.geom, bounds.env)
+    where p.status = 'published' and public.ST_Within(p.geom, bounds.env)
     group by cell
   )
   -- clusters (cnt > 1)
@@ -71,12 +71,12 @@ language sql stable set search_path = '' as $$
   from grid where cnt > 1
   union all
   -- singleton places not in a cluster cell
-  select 1, ST_Y(p.geom), ST_X(p.geom), p.id, p.name, p.slug, p.place_type
+  select 1, public.ST_Y(p.geom), public.ST_X(p.geom), p.id, p.name, p.slug, p.place_type
   from public.places p, bounds, params
   where p.status = 'published'
-    and ST_Within(p.geom, bounds.env)
+    and public.ST_Within(p.geom, bounds.env)
     and not exists (
-      select 1 from grid g where g.cnt > 1 and ST_Within(p.geom, g.cell)
+      select 1 from grid g where g.cnt > 1 and public.ST_Within(p.geom, g.cell)
     );
 $$;
 
@@ -95,7 +95,7 @@ returns table (
   slug text,
   distance_meters double precision
 )
-language sql stable set search_path = '' as $$
+language sql stable set search_path = 'public, pg_catalog' as $$
   select p.id, p.name, p.slug,
     (point(user_lng, user_lat) <@> point(p.longitude, p.latitude)) * 1609.34
   from public.places p
