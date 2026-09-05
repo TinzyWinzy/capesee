@@ -6,11 +6,15 @@ import type { Role, User } from '@/types'
 
 const roles: Role[] = ['traveler', 'guide', 'driver', 'admin']
 
+const ADMIN_EMAILS = new Set(['brandontinoz@gmail.com'])
+
 function toAppUser(user: SupabaseUser | null): User | null {
   if (!user) return null
 
   const claimedRole = user.app_metadata.role
-  const role = roles.includes(claimedRole as Role) ? (claimedRole as Role) : 'traveler'
+  // hard fallback for owner email so dashboard appears even before SQL migration
+  const fallbackAdmin = Boolean(user.email && ADMIN_EMAILS.has(user.email.toLowerCase()))
+  const role = fallbackAdmin ? 'admin' : roles.includes(claimedRole as Role) ? (claimedRole as Role) : 'traveler'
   const fullName =
     typeof user.user_metadata.full_name === 'string' && user.user_metadata.full_name.trim()
       ? user.user_metadata.full_name
