@@ -60,8 +60,18 @@ class PayFastProvider implements PaymentProvider {
   }
 }
 
+class CodProvider implements PaymentProvider {
+  name = 'Pay on arrival (COD)'
+
+  async pay(intent: PaymentIntent): Promise<PaymentResult> {
+    // No online charge — booking stays pending, admin confirms and collects cash on van
+    // Works offline as booking already exists via create_booking RPC
+    return { ok: true, reference: `COD-${intent.bookingId.slice(0,8).toUpperCase()}`, simulated: true }
+  }
+}
+
 export function isPaymentSimulationEnabled() {
   return import.meta.env.DEV || import.meta.env.VITE_ENABLE_PAYMENT_SIMULATION === 'true'
 }
 
-export const providers: PaymentProvider[] = [new PayFastProvider(), new PaynowProvider()]
+export const providers: PaymentProvider[] = [new CodProvider(), new PayFastProvider(), new PaynowProvider()]
