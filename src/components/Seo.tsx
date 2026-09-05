@@ -14,9 +14,9 @@ export interface SeoProps {
 
 const SITE_URL = 'https://www.capesee.com'
 const SITE_NAME = 'Capesee'
-const DEFAULT_TITLE = 'Capesee — Field Guide to the Cape'
+const DEFAULT_TITLE = 'Capesee — Rent vans for groups 3–8'
 const DEFAULT_DESCRIPTION =
-  'A field guide to the Cape: living discoveries, source-backed history and local experiences, all connected to place.'
+  'Rent vans for groups 3–8 in the Cape: standard to mini, self-drive or with driver, plus private tours — pay on arrival.'
 const DEFAULT_IMAGE = 'https://www.capesee.com/images/IMG-20260823-WA0114.jpg'
 
 function upsertMeta(selector: string, create: () => HTMLMetaElement) {

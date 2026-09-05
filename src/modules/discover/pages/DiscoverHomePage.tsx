@@ -260,15 +260,15 @@ export function DiscoverHomePage() {
   return (
     <main className="discover-home">
       <Seo
-        title="Discover the Cape"
-        description="Follow living discoveries, source-backed stories and memorable local experiences — all connected to place. Explore the living map of the Cape."
+        title="Rent vans for the Cape — Groups 3–8"
+        description="Rent standard to mini vans for groups 3–8: self-drive or with driver, private tours, pay on arrival. Stellenbosch, Peninsula, Atlantic seaboard."
         canonical="/discover"
         image={heroGallery[0]?.src ?? '/images/IMG-20260823-WA0114.jpg'}
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'CollectionPage',
-          name: 'Discover the Cape',
-          description: 'A living field guide to the Cape — discoveries, stories and experiences connected to place.',
+          name: 'Rent vans for the Cape',
+          description: 'Vans for groups 3–8, private tours, pay on arrival.',
           isPartOf: { '@type': 'WebSite', name: 'Capesee', url: 'https://www.capesee.com' },
         }}
       />
@@ -308,23 +308,24 @@ export function DiscoverHomePage() {
         </div>
 
         <div className="discover-hero-copy">
-          <p className="eyebrow discover-kicker">Field guide to the Cape</p>
-          <h1>See the Cape <em>beyond the postcard.</em></h1>
+          <p className="eyebrow discover-kicker">Cape vans for groups 3–8 • Self-drive or with driver</p>
+          <h1>Rent the van. <em>Own the Cape.</em></h1>
           <p className="discover-intro">
-            Follow living discoveries, source-backed stories and memorable local experiences—all connected to place.
+            Standard to mini vans for 3–8+ · Private group tours · Pay on arrival. Pick your van, pick your route — Capesee handles the rest.
           </p>
           
           <div className="discover-search">
             <SearchBar
-              placeholder="Search places, stories or experiences..."
+              placeholder="Search vans, places or tours..."
               onSubmit={(q) => navigate({ to: '/discover/search', search: { q } })}
             />
           </div>
 
           <div className="discover-primary-actions">
-            <Link to="/discover/nearby" className="btn btn-flame">Explore nearby <Icon name="arrow" /></Link>
-            <Link to="/discover/map" className="discover-text-action discover-text-action--light">Open living map <Icon name="arrow" /></Link>
+            <Link to="/book/transfers" className="btn btn-flame">Rent a van <Icon name="arrow" /></Link>
+            <Link to="/book/tours" className="discover-text-action discover-text-action--light">Private tours <Icon name="arrow" /></Link>
           </div>
+          <p className="text-faint text-xs" style={{ marginTop: 8 }}>Groups 3–8 • COD on arrival • Instant confirm</p>
         </div>
 
         {/* Clean bottom photo status bar */}
@@ -368,14 +369,15 @@ export function DiscoverHomePage() {
         <section className="discover-section experience-section booking-section">
           <div className="discover-section-heading">
             <div>
-              <p className="eyebrow">No. 01 — Book a local experience</p>
-              <h2>Experiences rooted in place</h2>
+              <p className="eyebrow">No. 01 — Rent vans & private tours</p>
+              <h2>Vans for 3–8, tours rooted in place</h2>
             </div>
-            <Link to="/book/tours" className="editorial-link">Explore all <span aria-hidden>→</span></Link>
+            <Link to="/book/transfers" className="editorial-link">See vans <span aria-hidden>→</span></Link>
           </div>
           <div className="experience-layout">
             {mockTours.slice(0, 2).map((tour) => <TourCard key={tour.id} tour={tour} />)}
           </div>
+          <p className="text-faint text-xs" style={{ marginTop: 8 }}>Self-drive or with driver • Groups 3–8+ • Mini to standard • Pay on arrival</p>
         </section>
 
         <section className="discover-section about-section">
@@ -388,13 +390,12 @@ export function DiscoverHomePage() {
                 </div>
               </div>
               <p>
-                Capesee is a living field guide to the Cape. Every place on the map is tied to the reports of people
-                who have been there and the experiences of locals who know it best — no postcards, no guesswork.
+                Capesee rents vans for groups 3–8+ and pairs them with source-backed places + local guides. Tourists book a private van + tour as one trip — COD on arrival, no postcard fluff.
               </p>
               <ul className="about-pillars">
-                <li><IconWinePour /><span>01</span><strong>Place</strong><small>Verified places, every one source-backed</small></li>
-                <li><IconCompass /><span>02</span><strong>Living reports</strong><small>Traveler discoveries, dated and real</small></li>
-                <li><IconDiscovery /><span>03</span><strong>Local experience</strong><small>Bookable experiences rooted in place</small></li>
+                <li><IconWinePour /><span>01</span><strong>Vans 3–8+</strong><small>Standard to mini, self-drive or with driver</small></li>
+                <li><IconCompass /><span>02</span><strong>Place</strong><small>Verified, every one source-backed</small></li>
+                <li><IconDiscovery /><span>03</span><strong>Private groups</strong><small>Per-group pricing, pay on arrival</small></li>
               </ul>
             </div>
             <aside className="about-note-card">
@@ -600,7 +601,7 @@ export function DiscoverHomePage() {
         <div className="site-footer-inner">
           <div className="site-footer-brand">
             <Link to="/discover" className="brand">CAPE<span>SEE</span></Link>
-            <p>A living field guide to the Cape — follow real discoveries, source-backed stories and local experiences, all connected to place.</p>
+            <p>Rent vans for groups 3–8+ — standard to mini, self-drive or with driver. Tours, stays & transfers — pay on arrival.</p>
           </div>
           <nav className="site-footer-col" aria-label="Discover">
             <strong>Discover</strong>
