@@ -17,6 +17,7 @@
     "test:release": "npm run lint && npm run build && npm run test:e2e"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.1",
     "@capacitor/app": "^8.1.1",
     "@capacitor/cli": "^8.5.1",
     "@capacitor/core": "^8.5.1",
