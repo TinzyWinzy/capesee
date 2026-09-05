@@ -97,10 +97,10 @@ returns table (
 )
 language sql stable set search_path = 'public, pg_catalog' as $$
   select p.id, p.name, p.slug,
-    (point(user_lng, user_lat) <@> point(p.longitude, p.latitude)) * 1609.34
+    public.earth_distance(public.ll_to_earth(user_lat, user_lng), public.ll_to_earth(p.latitude, p.longitude)) as distance_meters
   from public.places p
   where p.status = 'published'
-    and (point(user_lng, user_lat) <@> point(p.longitude, p.latitude)) * 1609.34 <= radius_meters
+    and public.earth_distance(public.ll_to_earth(user_lat, user_lng), public.ll_to_earth(p.latitude, p.longitude)) <= radius_meters
   order by 4 asc
   limit 50;
 $$;
