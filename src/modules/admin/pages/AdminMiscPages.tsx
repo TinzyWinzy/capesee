@@ -93,7 +93,10 @@ export function AdminTransfersPage() {
               <span className="bold text-small">{t.title}</span>
               <p className="text-faint text-xs">{formatRand(t.price)} / {t.priceUnit}</p>
             </div>
-            <Badge tone="info">Transfer</Badge>
+            <div className="row" style={{ gap: 8 }}>
+              <Badge tone="info">Transfer</Badge>
+              <Link to={"/admin/transfers/$transferId" as never} params={{ transferId: t.id } as never} className="btn btn-outline btn-sm">Edit</Link>
+            </div>
           </Card>
         ))}
       </div>
@@ -198,6 +201,13 @@ export function AdminMediaPage() {
   const [alt, setAlt] = useState('')
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
+  const { data: mediaRows, loading: mediaLoading, error: mediaError } = useAsyncData(async () => {
+    const supa = getSupabase()
+    if (!supa) return []
+    const { data, error } = await supa.from('place_media').select('id, place_id, url, alt_text, kind, created_at').order('created_at', { ascending: false }).limit(24)
+    if (error) throw error
+    return data
+  }, [])
 
   const upload = async () => {
     if (!file || !placeId) { setMsg('Choose a place and file'); return }
@@ -207,27 +217,36 @@ export function AdminMediaPage() {
       const supa = getSupabase()!
       const ext = file.name.split('.').pop() ?? 'jpg'
       const key = `places/${placeId}/${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`
-      let bucket = 'place-media'
-      let { error } = await supa.storage.from(bucket).upload(key, file, { contentType: file.type })
-      if (error && error.message.includes('Bucket not found')) {
-        // fallback to public bucket if needed
-        bucket = 'place-media'
-        throw error
-      }
+      const bucket = 'place-media'
+      const { error } = await supa.storage.from(bucket).upload(key, file, { contentType: file.type })
       if (error) throw error
       const { data: urlData } = supa.storage.from(bucket).getPublicUrl(key)
-      const { error: dbErr } = await supa.from('place_media').insert({ place_id: placeId, kind: 'image', url: urlData.publicUrl, alt_text: alt || null, status: 'published' })
+      const { error: dbErr } = await supa.from('place_media').insert({ place_id: placeId, kind: file.type.startsWith('video') ? 'video' : 'image', url: urlData.publicUrl, alt_text: alt || null, status: 'published' })
       if (dbErr) throw dbErr
-      setMsg(`Uploaded to ${bucket}/${key}`)
+      setMsg(`Uploaded to ${bucket}/${key} — refresh to see in library`)
       setFile(null); setAlt('')
     } catch (e) { setMsg(String((e as Error).message)) } finally { setBusy(false) }
+  }
+
+  const remove = async (id: string, url: string) => {
+    if (!getSupabase()) return
+    if (!confirm('Delete this media?')) return
+    try {
+      const supa = getSupabase()!
+      // try to delete storage object if url contains place-media
+      const path = url.split('/place-media/')[1]
+      if (path) await supa.storage.from('place-media').remove([path])
+      await supa.from('place_media').delete().eq('id', id)
+      setMsg('Deleted')
+      window.location.reload()
+    } catch (e) { setMsg(String((e as Error).message)) }
   }
 
   return (
     <div className="stack">
       <div className="admin-panel-head">
         <h1>Media</h1>
-        <span>Library — upload to Supabase Storage</span>
+        <span>Library — upload to Supabase Storage {mediaRows ? `· ${mediaRows.length} items` : ''}</span>
       </div>
       <Card className="stack">
         <span className="eyebrow">Upload</span>
@@ -252,10 +271,18 @@ export function AdminMediaPage() {
           <Button variant="primary" onClick={upload} disabled={busy || !file}>{busy ? 'Uploading…' : 'Upload'}</Button>
         </div>
       </Card>
+      {mediaLoading ? <SkeletonCard lines={2} /> : null}
+      {mediaError ? <p className="alert alert-error" role="alert">{mediaError.message}</p> : null}
       <div className="grid-3">
-        {places.map((p) => (
-          <div key={p.id} className="media ratio-4-3">
-            <span className="text-xs">{p.name}</span>
+        {(((mediaRows && mediaRows.length > 0 ? mediaRows : places.slice(0,6).map(p => ({ id: p.id, url: p.coverUrl ?? '', alt_text: p.name, kind: 'image' }))) as unknown as Array<{ id: string; url: string; alt_text: string | null; kind: string }>)).map((row) => (
+          <div key={row.id} className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div className="media ratio-4-3" style={{ background: 'var(--color-surface-2)' }}>
+              {row.url ? <img src={row.url} alt={row.alt_text ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span className="text-xs">{row.alt_text}</span>}
+            </div>
+            <div className="row-between" style={{ padding: '8px 10px' }}>
+              <span className="text-xs text-faint">{row.kind}</span>
+              {mediaRows?.find(x => x.id === row.id) ? <button className="btn btn-ghost btn-sm" onClick={() => remove(row.id, row.url)}>Delete</button> : null}
+            </div>
           </div>
         ))}
       </div>
@@ -566,6 +593,66 @@ export function AdminStayEditorPage({ stayId }: { stayId: string }) {
           </Card>
 
           <AdminInventoryPanel productId={stayId} />
+        </>
+      ) : null}
+    </form>
+  )
+}
+
+/** Admin transfer editor — same as stay but product_type transfer. */
+export function AdminTransferEditorPage({ transferId }: { transferId: string }) {
+  const live = getSupabase()
+  const fallback = getProducts('transfer').find((t) => t.id === transferId)
+  const [form, setForm] = useState<StayForm | null>(null)
+  const [loaded, setLoaded] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [message, setMessage] = useState<{ tone: 'success' | 'error'; text: string }>()
+  useEffect(() => {
+    let active = true
+    let cancelled = false
+    const apply = (row: { title: string; description: string; price: number; price_unit: string; status: string } | null) => {
+      if (cancelled) return
+      setForm({ title: row?.title ?? fallback?.title ?? 'Untitled transfer', description: row?.description ?? '', price: row?.price ?? fallback?.price ?? 0, priceUnit: row?.price_unit ?? fallback?.priceUnit ?? 'trip', status: row?.status ?? 'active' })
+      setLoaded(true)
+    }
+    if (live) {
+      import('@/modules/bookings/api/products').then(({ fetchProductRow }) => fetchProductRow(transferId)).then((row) => { if (active) apply(row) }).catch(() => { if (active) apply(null) })
+    } else apply(null)
+    return () => { active = false; cancelled = true }
+  }, [transferId, live, fallback?.id, fallback?.title, fallback?.price, fallback?.priceUnit])
+  const patch = (partial: Partial<StayForm>) => setForm((c) => (c ? { ...c, ...partial } : c))
+  const save = async (event: FormEvent) => {
+    event.preventDefault()
+    if (!form) return
+    if (!live) { setMessage({ tone: 'error', text: 'Live saving needs Supabase.' }); return }
+    setBusy(true); setMessage(undefined)
+    try {
+      const { updateProduct } = await import('@/modules/bookings/api/products')
+      await updateProduct(transferId, { title: form.title.trim(), description: form.description.trim(), price: form.price, price_unit: form.priceUnit, status: form.status })
+      setMessage({ tone: 'success', text: 'Transfer updated.' })
+    } catch (cause) { setMessage({ tone: 'error', text: cause instanceof Error ? cause.message : 'Could not save.' }) } finally { setBusy(false) }
+  }
+  return (
+    <form className="stack" onSubmit={(event) => void save(event)}>
+      <div className="admin-panel-head">
+        <div className="row"><Link to="/admin/transfers" className="btn btn-ghost btn-sm">←</Link><h1>Edit transfer</h1></div>
+        <div className="row"><Button type="submit" variant="primary" disabled={!loaded || busy || !form}>{busy ? 'Saving…' : 'Save changes'}</Button></div>
+      </div>
+      {!live ? <p className="alert">Read-only preview — live catalog updates require Supabase.</p> : null}
+      {message ? <p className={message.tone === 'success' ? 'alert alert-success' : 'alert alert-error'} role="status">{message.text}</p> : null}
+      {!loaded ? <SkeletonCard lines={6} /> : form ? (
+        <>
+          <Card className="stack"><span className="eyebrow">Basic information</span>
+            <label><span className="label">Title</span><input className="input" value={form.title} onChange={(e) => patch({ title: e.target.value })} /></label>
+            <label><span className="label">Description</span><textarea className="textarea" rows={4} value={form.description} onChange={(e) => patch({ description: e.target.value })} /></label>
+          </Card>
+          <Card className="stack"><span className="eyebrow">Pricing</span>
+            <div className="admin-form-grid">
+              <label><span className="label">Price (ZAR)</span><input className="input" type="number" min="0" value={form.price} onChange={(e) => patch({ price: e.target.valueAsNumber || 0 })} /></label>
+              <label><span className="label">Billing unit</span><select className="select" value={form.priceUnit} onChange={(e) => patch({ priceUnit: e.target.value })}><option value="trip">Per trip</option><option value="person">Per person</option><option value="night">Per night</option></select></label>
+              <label><span className="label">Status</span><select className="select" value={form.status} onChange={(e) => patch({ status: e.target.value })}><option value="active">Active</option><option value="draft">Draft</option><option value="archived">Archived</option></select></label>
+            </div>
+          </Card>
         </>
       ) : null}
     </form>
