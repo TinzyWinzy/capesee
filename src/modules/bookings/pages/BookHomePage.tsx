@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Card, DatePicker, GuestSelector, TourCard } from '@/components/ui'
+import { Seo } from '@/components/Seo'
 import { REGIONS } from '@/lib/constants'
 import { mockTours } from '@/lib/mock'
 
@@ -13,6 +14,17 @@ export function BookHomePage() {
 
   return (
     <div className="page">
+      <Seo
+        title="Book — Tours, Stays & Transfers"
+        description="Book Cape tours, stays and transfers — all rooted in place. Stellenbosch wine tours, Peninsula routes and coastal stays with local guides. Check dates and guests."
+        canonical="/book"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Book your Cape experience',
+          description: 'Tours, stays and transfers across the Western Cape.',
+        }}
+      />
       <header className="book-home-head">
         <p className="eyebrow">Plan your trip</p>
         <h1 className="section-title">Book your Cape experience</h1>

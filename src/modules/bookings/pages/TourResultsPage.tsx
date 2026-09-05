@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Button, FilterDrawer, TourCard, useFilterDrawer } from '@/components/ui'
+import { Seo } from '@/components/Seo'
 import { getProducts } from '@/modules/bookings/api/products'
 
 /** T10 — Tour search results. Wireframe spec §12. */
@@ -12,6 +13,23 @@ export function TourResultsPage() {
 
   return (
     <div className="page">
+      <Seo
+        title="Tours — Western Cape"
+        description={`Browse ${tours.length} guided Cape tours — Stellenbosch wine, Peninsula routes, whale watching and city walks. Local guides, pickup options, real reviews.`}
+        canonical="/book/tours"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: 'Cape Tours',
+          numberOfItems: tours.length,
+          itemListElement: tours.slice(0, 5).map((t, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            url: `https://www.capesee.com/book/tours/${t.slug}`,
+            name: t.title,
+          })),
+        }}
+      />
       <div className="row-between">
         <Link to="/book" className="btn btn-ghost btn-sm" aria-label="Back">
           ←

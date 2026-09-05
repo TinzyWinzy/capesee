@@ -1,6 +1,7 @@
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Card, DiscoveryCard, TourCard } from '@/components/ui'
+import { Seo } from '@/components/Seo'
 import { getPlaces } from '@/modules/places/api/places'
 import { getProducts } from '@/modules/bookings/api/products'
 import { getNearbyDiscoveries } from '@/modules/discover/api/discoveries'
@@ -29,6 +30,12 @@ export function SearchPage() {
 
   return (
     <div className="page">
+      <Seo
+        title={query ? `Search: ${query}` : 'Search the Cape'}
+        description="Search places, tours, stays and traveler discoveries across the Cape. Find verified places, source-backed history and local experiences."
+        canonical="/discover/search"
+        noindex={true}
+      />
       <div className="row" style={{ marginBottom: 12 }}>
         <Link to="/discover" className="btn btn-ghost btn-sm" aria-label="Back">
           ←

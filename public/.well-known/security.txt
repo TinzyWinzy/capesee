@@ -1,0 +1,5 @@
+Contact: mailto:security@capesee.com
+Expires: 2027-09-05T00:00:00.000Z
+Acknowledgments: https://www.capesee.com/.well-known/security.txt
+Preferred-Languages: en
+Canonical: https://www.capesee.com/.well-known/security.txt

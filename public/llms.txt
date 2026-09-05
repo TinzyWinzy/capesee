@@ -1,0 +1,17 @@
+# Capesee
+
+> A field guide to the Cape: living discoveries, source-backed history and local experiences, all connected to place.
+
+## Primary
+- [Discover](https://www.capesee.com/discover): Field guide home
+- [Living Map](https://www.capesee.com/discover/map): Interactive discovery map
+- [Places](https://www.capesee.com/discover/places): Verified places
+- [Gallery](https://www.capesee.com/discover/gallery): 70+ field captures
+- [Tours](https://www.capesee.com/book/tours): Bookable Cape experiences
+
+## Places
+- [Castle of Good Hope](https://www.capesee.com/discover/places/castle-of-good-hope)
+- [Kirstenbosch](https://www.capesee.com/discover/places/kirstenbosch)
+- [Stellenbosch](https://www.capesee.com/discover/places/stellenbosch)
+- [Hermanus](https://www.capesee.com/discover/places/hermanus)
+

@@ -1,4 +1,5 @@
 import { Link, Outlet, useRouterState } from '@tanstack/react-router'
+import { Seo } from '@/components/Seo'
 
 const STEPS = [
   { key: 'details', label: 'Traveler details' },
@@ -13,6 +14,7 @@ export function CheckoutLayout() {
 
   return (
     <div className="checkout-shell">
+      <Seo title="Checkout" noindex={true} />
       <header className="checkout-topbar">
         <Link to="/discover" className="brand">CAPE<span>SEE</span></Link>
         <Link to="/book/cart">← Return to trip</Link>

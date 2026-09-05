@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import type { Place } from '@/types'
 import { DiscoveryCard, SourceBadge, TourCard } from '@/components/ui'
+import { Seo } from '@/components/Seo'
 import { getDiscoveriesForPlace } from '@/modules/discover/api/discoveries'
 import { getProducts } from '@/modules/bookings/api/products'
 import { getTimelineForPlace } from '@/modules/places/api/places'
@@ -13,6 +14,28 @@ export function PlaceOverviewPage({ place }: { place: Place }) {
 
   return (
     <div className="place-overview">
+      <Seo
+        title={place.name}
+        description={place.description.slice(0, 155)}
+        canonical={`/discover/places/${place.slug}`}
+        image={place.coverUrl ?? undefined}
+        imageAlt={`${place.name} — ${place.locationName}`}
+        type="article"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'TouristAttraction',
+          name: place.name,
+          description: place.description,
+          image: place.coverUrl ? `https://www.capesee.com${place.coverUrl}` : undefined,
+          geo: {
+            '@type': 'GeoCoordinates',
+            latitude: place.coordinates.lat,
+            longitude: place.coordinates.lng,
+          },
+          address: { '@type': 'PostalAddress', addressLocality: place.locationName, addressRegion: 'Western Cape', addressCountry: 'ZA' },
+          aggregateRating: place.rating ? { '@type': 'AggregateRating', ratingValue: place.rating } : undefined,
+        }}
+      />
       <section className="place-overview-intro">
         <div>
           <p className="eyebrow">About this place</p>

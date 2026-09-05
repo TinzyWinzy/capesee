@@ -7,6 +7,7 @@ import { mockTours } from '@/lib/mock'
 import { galleryImages } from '@/lib/gallery'
 import { getNearbyDiscoveries } from '@/modules/discover/api/discoveries'
 import { useAuthStore } from '@/stores/auth'
+import { Seo } from '@/components/Seo'
 
 const heroGallery = galleryImages.slice(0, 8)
 const photoReel = galleryImages
@@ -240,6 +241,19 @@ export function DiscoverHomePage() {
 
   return (
     <main className="discover-home">
+      <Seo
+        title="Discover the Cape"
+        description="Follow living discoveries, source-backed stories and memorable local experiences — all connected to place. Explore the living map of the Cape."
+        canonical="/discover"
+        image={heroGallery[0]?.src ?? '/images/IMG-20260823-WA0114.jpg'}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Discover the Cape',
+          description: 'A living field guide to the Cape — discoveries, stories and experiences connected to place.',
+          isPartOf: { '@type': 'WebSite', name: 'Capesee', url: 'https://www.capesee.com' },
+        }}
+      />
       {/* ── CLEAN FULL-BLEED HERO ── */}
       <section className="discover-hero discover-hero--clean">
         {/* Background photo stack with dark gradient overlay */}

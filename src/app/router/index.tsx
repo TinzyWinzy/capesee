@@ -6,7 +6,13 @@ export const router = createRouter({
   routeTree,
   defaultPreload: 'intent',
   defaultPendingMs: 200,
-  defaultErrorComponent: ({ error }) => <ErrorState message={String(error)} />,
+  defaultErrorComponent: ({ error, reset }) => {
+    const offline = typeof navigator !== 'undefined' && !navigator.onLine
+    const msg = offline
+      ? 'You are offline — retry when back online.'
+      : String(error ?? 'Something went wrong.')
+    return <ErrorState message={msg} onRetry={reset} />
+  },
   defaultNotFoundComponent: () => (
     <EmptyState
       icon="◌"

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import type { BookableProduct } from '@/types'
 import { Badge, DatePicker, GuestSelector, RatingDisplay } from '@/components/ui'
+import { Seo } from '@/components/Seo'
 import { MapSurface } from '@/components/maps/MapSurface'
 import { formatRand } from '@/lib/format'
 import { useCartStore } from '@/stores/cart'
@@ -22,6 +23,28 @@ export function TourDetailPage({ tour }: { tour: BookableProduct }) {
 
   return (
     <main className="tour-detail-shell">
+      <Seo
+        title={tour.title}
+        description={`${tour.title} — ${tour.durationHours ? `${tour.durationHours} hours · ` : ''}${tour.guideIncluded ? 'Local guide included · ' : ''}From ${formatRand(tour.price)} per person. Book on Capesee.`}
+        canonical={`/book/tours/${tour.slug}`}
+        image={tour.coverUrl ?? undefined}
+        type="product"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'TouristTrip',
+          name: tour.title,
+          description: `${tour.title} in the Western Cape`,
+          image: tour.coverUrl ? `https://www.capesee.com${tour.coverUrl}` : undefined,
+          offers: {
+            '@type': 'Offer',
+            price: tour.price,
+            priceCurrency: 'ZAR',
+            availability: 'https://schema.org/InStock',
+            url: `https://www.capesee.com/book/tours/${tour.slug}`,
+          },
+          aggregateRating: tour.rating ? { '@type': 'AggregateRating', ratingValue: tour.rating, reviewCount: tour.reviewCount } : undefined,
+        }}
+      />
       <section className="tour-hero">
         {tour.coverUrl ? (
           <img src={tour.coverUrl} alt={`${tour.title} experience`} />

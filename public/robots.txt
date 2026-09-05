@@ -1,0 +1,12 @@
+# Capesee — robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /guide/
+Disallow: /checkout/
+Disallow: /trips/
+Disallow: /account/
+Disallow: /*?*q=
+
+Sitemap: https://www.capesee.com/sitemap.xml
+Host: https://www.capesee.com

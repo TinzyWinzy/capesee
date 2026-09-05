@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Card, PlaceholderPage, PlaceCard, DiscoveryCard, EmptyState } from '@/components/ui'
+import { Seo } from '@/components/Seo'
 import { getPlacesByRegion } from '@/modules/places/api/places'
 import { REGIONS } from '@/lib/constants'
 import { getPlaceById, mockPins } from '@/lib/mock'
@@ -35,6 +36,17 @@ export function RegionPage({ regionSlug }: { regionSlug: string }) {
 
   return (
     <div className="page">
+      <Seo
+        title={`${region.name} — Western Cape`}
+        description={`${region.name}: top places, live traveler discoveries and experiences rooted in this Cape region. Explore verified places and book local stays and tours.`}
+        canonical={`/discover/regions/${region.slug}`}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'AdministrativeArea',
+          name: region.name,
+          containedInPlace: { '@type': 'AdministrativeArea', name: 'Western Cape' },
+        }}
+      />
       <div className="row">
         <Link to="/discover/regions" className="btn btn-ghost btn-sm" aria-label="Back">
           ←

@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { Button, DiscoveryCard, EmptyState } from '@/components/ui'
 import { getNearbyDiscoveries } from '@/modules/discover/api/discoveries'
+import { Seo } from '@/components/Seo'
 import { useState } from 'react'
 
 /** T03 — Nearby discoveries. Wireframe spec §5. */
@@ -11,6 +12,11 @@ export function NearbyPage() {
 
   return (
     <div className="page-narrow">
+      <Seo
+        title="Discoveries Near You"
+        description="Live traveler discoveries near you across the Cape — wildlife sightings, history notes and local finds pinned to place. Filter by distance and category."
+        canonical="/discover/nearby"
+      />
       <div className="row-between">
         <Link to="/discover" className="btn btn-ghost btn-sm" aria-label="Back">
           ←

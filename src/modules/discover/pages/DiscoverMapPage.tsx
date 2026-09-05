@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Button, FilterDrawer, useFilterDrawer } from '@/components/ui'
 import { MapSurface } from '@/components/maps/MapSurface'
+import { Seo } from '@/components/Seo'
 import { useMapMarkers, type MapMarkerData } from '@/modules/maps/hooks/useMapMarkers'
 import { distanceLabel } from '@/lib/format'
 import { haversineKm, type LatLng } from '@/lib/geo'
@@ -75,6 +76,17 @@ export function DiscoverMapPage() {
 
   return (
     <main className="map-page-shell">
+      <Seo
+        title="Living Map — Cape Discoveries"
+        description="Explore the living map: verified places and traveler discoveries pinned to real coordinates across the Cape. Search this area, filter and follow what is unfolding now."
+        canonical="/discover/map"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Map',
+          name: 'Capesee Living Map',
+          description: 'Interactive map of Cape discoveries and verified places.',
+        }}
+      />
       <header className="map-toolbar">
         <Link to="/discover" aria-label="Back to Discover" className="map-back-button">←</Link>
         <label className="map-search-field">

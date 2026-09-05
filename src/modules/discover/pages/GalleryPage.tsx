@@ -1,13 +1,41 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { galleryImages, galleryVideos } from '@/lib/gallery'
+import { Seo } from '@/components/Seo'
 
 export function GalleryPage() {
   const [active, setActive] = useState<string | null>(null)
   const [filter, setFilter] = useState<'all' | 'images' | 'videos'>('all')
+  const closeBtnRef = useRef<HTMLButtonElement>(null)
+  const lastActiveRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    if (!active) return
+    lastActiveRef.current = document.activeElement as HTMLElement | null
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    // focus close button for keyboard users
+    window.setTimeout(() => closeBtnRef.current?.focus(), 0)
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActive(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = prevOverflow
+      window.removeEventListener('keydown', onKey)
+      lastActiveRef.current?.focus()
+    }
+  }, [active])
 
   return (
     <main className="page-narrow" style={{ maxWidth: 1100 }}>
+      <Seo
+        title="Field Gallery"
+        description={`Browse ${galleryImages.length} field photos and ${galleryVideos.length} videos from the Cape — Chapman's Peak, Stellenbosch vineyards, Atlantic cliffs and more. All captures shot in the field.`}
+        canonical="/discover/gallery"
+        image={galleryImages[0]?.src}
+      />
       <div className="row-between" style={{ marginBottom: 16 }}>
         <div>
           <h1 className="section-title">Field Gallery</h1>
@@ -51,8 +79,29 @@ export function GalleryPage() {
       )}
 
       {active && (
-        <div className="gallery-lightbox" role="dialog" aria-modal="true" onClick={()=>setActive(null)}>
-          <img src={active} alt="" style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain' }} />
+        <div
+          className="gallery-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image preview — press Escape to close"
+          onClick={() => setActive(null)}
+        >
+          <button
+            ref={closeBtnRef}
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => setActive(null)}
+            aria-label="Close preview"
+            style={{ position: 'absolute', top: 16, right: 16, background: 'rgba(11,33,30,.6)', color: '#fff', borderColor: 'rgba(255,255,255,.2)' }}
+          >
+            ✕ Close
+          </button>
+          <img
+            src={active}
+            alt={galleryImages.find((g) => g.src === active)?.alt ?? 'Field capture preview'}
+            style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: 12 }}
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
     </main>
