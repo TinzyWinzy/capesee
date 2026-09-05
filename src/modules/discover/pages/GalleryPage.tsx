@@ -56,7 +56,10 @@ export function GalleryPage() {
           <div className="gallery-masonry">
             {galleryImages.map(img => (
               <button key={img.src} className="gallery-item" onClick={()=>setActive(img.src)} aria-label={img.alt}>
-                <img src={img.src} alt={img.alt} loading="lazy" />
+                <picture>
+                  <source srcSet={img.webpSrc} type="image/webp" />
+                  <img src={img.src} alt={img.alt} loading="lazy" decoding="async" style={{ width: '100%', display: 'block', borderRadius: 8 }} />
+                </picture>
                 <span className="gallery-caption">{img.alt}</span>
               </button>
             ))}
@@ -96,12 +99,15 @@ export function GalleryPage() {
           >
             ✕ Close
           </button>
-          <img
-            src={active}
-            alt={galleryImages.find((g) => g.src === active)?.alt ?? 'Field capture preview'}
-            style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: 12 }}
-            onClick={(e) => e.stopPropagation()}
-          />
+          <picture onClick={(e) => e.stopPropagation()}>
+            <source srcSet={active.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
+            <img
+              src={active}
+              alt={galleryImages.find((g) => g.src === active)?.alt ?? 'Field capture preview'}
+              style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: 12 }}
+              decoding="async"
+            />
+          </picture>
         </div>
       )}
     </main>

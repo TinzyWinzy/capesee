@@ -2,8 +2,12 @@
  *  Add alt overrides in ALT_OVERRIDES. New files in public/images|videos are picked up by re-running generation.
  */
 
-export interface GalleryImage { src: string; alt: string; stem: string }
+export interface GalleryImage { src: string; webpSrc: string; alt: string; stem: string }
 export interface GalleryVideo { src: string; alt: string; stem: string }
+
+export function webpFor(src: string): string {
+  return src.replace(/\.jpe?g$/i, '.webp')
+}
 
 const ALT_OVERRIDES: Record<string, string> = {
   'IMG-20260823-WA0114': "Hout Bay from Chapman's Peak, Cape Peninsula",
@@ -24,96 +28,19 @@ const ALT_OVERRIDES: Record<string, string> = {
 
 function altFor(stem: string): string {
   if (ALT_OVERRIDES[stem]) return ALT_OVERRIDES[stem]
-  // fallback: humanize filename
   return stem.replace(/^IMG-|^VID-/, '').replace(/-/g, ' ') + ' — field capture'
 }
 
-export const galleryImages: GalleryImage[] = [
-  { src: '/images/IMG-20260823-WA0114.jpg', alt: altFor('IMG-20260823-WA0114'), stem: 'IMG-20260823-WA0114' },
-  { src: '/images/IMG-20260823-WA0117.jpg', alt: altFor('IMG-20260823-WA0117'), stem: 'IMG-20260823-WA0117' },
-  { src: '/images/IMG-20260823-WA0119.jpg', alt: altFor('IMG-20260823-WA0119'), stem: 'IMG-20260823-WA0119' },
-  { src: '/images/IMG-20260823-WA0120.jpg', alt: altFor('IMG-20260823-WA0120'), stem: 'IMG-20260823-WA0120' },
-  { src: '/images/IMG-20260823-WA0121.jpg', alt: altFor('IMG-20260823-WA0121'), stem: 'IMG-20260823-WA0121' },
-  { src: '/images/IMG-20260823-WA0122.jpg', alt: altFor('IMG-20260823-WA0122'), stem: 'IMG-20260823-WA0122' },
-  { src: '/images/IMG-20260823-WA0123.jpg', alt: altFor('IMG-20260823-WA0123'), stem: 'IMG-20260823-WA0123' },
-  { src: '/images/IMG-20260823-WA0124.jpg', alt: altFor('IMG-20260823-WA0124'), stem: 'IMG-20260823-WA0124' },
-  { src: '/images/IMG-20260823-WA0125.jpg', alt: altFor('IMG-20260823-WA0125'), stem: 'IMG-20260823-WA0125' },
-  { src: '/images/IMG-20260823-WA0126.jpg', alt: altFor('IMG-20260823-WA0126'), stem: 'IMG-20260823-WA0126' },
-  { src: '/images/IMG-20260823-WA0129.jpg', alt: altFor('IMG-20260823-WA0129'), stem: 'IMG-20260823-WA0129' },
-  { src: '/images/IMG-20260823-WA0130.jpg', alt: altFor('IMG-20260823-WA0130'), stem: 'IMG-20260823-WA0130' },
-  { src: '/images/IMG-20260823-WA0131.jpg', alt: altFor('IMG-20260823-WA0131'), stem: 'IMG-20260823-WA0131' },
-  { src: '/images/IMG-20260823-WA0132.jpg', alt: altFor('IMG-20260823-WA0132'), stem: 'IMG-20260823-WA0132' },
-  { src: '/images/IMG-20260823-WA0133.jpg', alt: altFor('IMG-20260823-WA0133'), stem: 'IMG-20260823-WA0133' },
-  { src: '/images/IMG-20260823-WA0135.jpg', alt: altFor('IMG-20260823-WA0135'), stem: 'IMG-20260823-WA0135' },
-  { src: '/images/IMG-20260823-WA0139.jpg', alt: altFor('IMG-20260823-WA0139'), stem: 'IMG-20260823-WA0139' },
-  { src: '/images/IMG-20260823-WA0140.jpg', alt: altFor('IMG-20260823-WA0140'), stem: 'IMG-20260823-WA0140' },
-  { src: '/images/IMG-20260823-WA0141.jpg', alt: altFor('IMG-20260823-WA0141'), stem: 'IMG-20260823-WA0141' },
-  { src: '/images/IMG-20260823-WA0142.jpg', alt: altFor('IMG-20260823-WA0142'), stem: 'IMG-20260823-WA0142' },
-  { src: '/images/IMG-20260823-WA0144.jpg', alt: altFor('IMG-20260823-WA0144'), stem: 'IMG-20260823-WA0144' },
-  { src: '/images/IMG-20260823-WA0145.jpg', alt: altFor('IMG-20260823-WA0145'), stem: 'IMG-20260823-WA0145' },
-  { src: '/images/IMG-20260823-WA0146.jpg', alt: altFor('IMG-20260823-WA0146'), stem: 'IMG-20260823-WA0146' },
-  { src: '/images/IMG-20260823-WA0147.jpg', alt: altFor('IMG-20260823-WA0147'), stem: 'IMG-20260823-WA0147' },
-  { src: '/images/IMG-20260823-WA0148.jpg', alt: altFor('IMG-20260823-WA0148'), stem: 'IMG-20260823-WA0148' },
-  { src: '/images/IMG-20260823-WA0149.jpg', alt: altFor('IMG-20260823-WA0149'), stem: 'IMG-20260823-WA0149' },
-  { src: '/images/IMG-20260823-WA0150.jpg', alt: altFor('IMG-20260823-WA0150'), stem: 'IMG-20260823-WA0150' },
-  { src: '/images/IMG-20260823-WA0151.jpg', alt: altFor('IMG-20260823-WA0151'), stem: 'IMG-20260823-WA0151' },
-  { src: '/images/IMG-20260823-WA0152.jpg', alt: altFor('IMG-20260823-WA0152'), stem: 'IMG-20260823-WA0152' },
-  { src: '/images/IMG-20260823-WA0153.jpg', alt: altFor('IMG-20260823-WA0153'), stem: 'IMG-20260823-WA0153' },
-  { src: '/images/IMG-20260823-WA0154.jpg', alt: altFor('IMG-20260823-WA0154'), stem: 'IMG-20260823-WA0154' },
-  { src: '/images/IMG-20260823-WA0155.jpg', alt: altFor('IMG-20260823-WA0155'), stem: 'IMG-20260823-WA0155' },
-  { src: '/images/IMG-20260823-WA0156.jpg', alt: altFor('IMG-20260823-WA0156'), stem: 'IMG-20260823-WA0156' },
-  { src: '/images/IMG-20260823-WA0157.jpg', alt: altFor('IMG-20260823-WA0157'), stem: 'IMG-20260823-WA0157' },
-  { src: '/images/IMG-20260823-WA0159.jpg', alt: altFor('IMG-20260823-WA0159'), stem: 'IMG-20260823-WA0159' },
-  { src: '/images/IMG-20260823-WA0160.jpg', alt: altFor('IMG-20260823-WA0160'), stem: 'IMG-20260823-WA0160' },
-  { src: '/images/IMG-20260823-WA0161.jpg', alt: altFor('IMG-20260823-WA0161'), stem: 'IMG-20260823-WA0161' },
-  { src: '/images/IMG-20260823-WA0162.jpg', alt: altFor('IMG-20260823-WA0162'), stem: 'IMG-20260823-WA0162' },
-  { src: '/images/IMG-20260823-WA0163.jpg', alt: altFor('IMG-20260823-WA0163'), stem: 'IMG-20260823-WA0163' },
-  { src: '/images/IMG-20260823-WA0165.jpg', alt: altFor('IMG-20260823-WA0165'), stem: 'IMG-20260823-WA0165' },
-  { src: '/images/IMG-20260823-WA0166.jpg', alt: altFor('IMG-20260823-WA0166'), stem: 'IMG-20260823-WA0166' },
-  { src: '/images/IMG-20260823-WA0167.jpg', alt: altFor('IMG-20260823-WA0167'), stem: 'IMG-20260823-WA0167' },
-  { src: '/images/IMG-20260823-WA0168.jpg', alt: altFor('IMG-20260823-WA0168'), stem: 'IMG-20260823-WA0168' },
-  { src: '/images/IMG-20260823-WA0169.jpg', alt: altFor('IMG-20260823-WA0169'), stem: 'IMG-20260823-WA0169' },
-  { src: '/images/IMG-20260823-WA0170.jpg', alt: altFor('IMG-20260823-WA0170'), stem: 'IMG-20260823-WA0170' },
-  { src: '/images/IMG-20260823-WA0171.jpg', alt: altFor('IMG-20260823-WA0171'), stem: 'IMG-20260823-WA0171' },
-  { src: '/images/IMG-20260823-WA0172.jpg', alt: altFor('IMG-20260823-WA0172'), stem: 'IMG-20260823-WA0172' },
-  { src: '/images/IMG-20260823-WA0173.jpg', alt: altFor('IMG-20260823-WA0173'), stem: 'IMG-20260823-WA0173' },
-  { src: '/images/IMG-20260823-WA0174.jpg', alt: altFor('IMG-20260823-WA0174'), stem: 'IMG-20260823-WA0174' },
-  { src: '/images/IMG-20260823-WA0175.jpg', alt: altFor('IMG-20260823-WA0175'), stem: 'IMG-20260823-WA0175' },
-  { src: '/images/IMG-20260823-WA0176.jpg', alt: altFor('IMG-20260823-WA0176'), stem: 'IMG-20260823-WA0176' },
-  { src: '/images/IMG-20260823-WA0178.jpg', alt: altFor('IMG-20260823-WA0178'), stem: 'IMG-20260823-WA0178' },
-  { src: '/images/IMG-20260823-WA0179.jpg', alt: altFor('IMG-20260823-WA0179'), stem: 'IMG-20260823-WA0179' },
-  { src: '/images/IMG-20260823-WA0180.jpg', alt: altFor('IMG-20260823-WA0180'), stem: 'IMG-20260823-WA0180' },
-  { src: '/images/IMG-20260823-WA0181.jpg', alt: altFor('IMG-20260823-WA0181'), stem: 'IMG-20260823-WA0181' },
-  { src: '/images/IMG-20260823-WA0182.jpg', alt: altFor('IMG-20260823-WA0182'), stem: 'IMG-20260823-WA0182' },
-  { src: '/images/IMG-20260823-WA0183.jpg', alt: altFor('IMG-20260823-WA0183'), stem: 'IMG-20260823-WA0183' },
-  { src: '/images/IMG-20260823-WA0184.jpg', alt: altFor('IMG-20260823-WA0184'), stem: 'IMG-20260823-WA0184' },
-  { src: '/images/IMG-20260823-WA0185.jpg', alt: altFor('IMG-20260823-WA0185'), stem: 'IMG-20260823-WA0185' },
-  { src: '/images/IMG-20260823-WA0186.jpg', alt: altFor('IMG-20260823-WA0186'), stem: 'IMG-20260823-WA0186' },
-  { src: '/images/IMG-20260823-WA0187.jpg', alt: altFor('IMG-20260823-WA0187'), stem: 'IMG-20260823-WA0187' },
-  { src: '/images/IMG-20260823-WA0188.jpg', alt: altFor('IMG-20260823-WA0188'), stem: 'IMG-20260823-WA0188' },
-  { src: '/images/IMG-20260823-WA0189.jpg', alt: altFor('IMG-20260823-WA0189'), stem: 'IMG-20260823-WA0189' },
-  { src: '/images/IMG-20260823-WA0192.jpg', alt: altFor('IMG-20260823-WA0192'), stem: 'IMG-20260823-WA0192' },
-  { src: '/images/IMG-20260901-WA0009.jpg', alt: altFor('IMG-20260901-WA0009'), stem: 'IMG-20260901-WA0009' },
-  { src: '/images/IMG-20260901-WA0010.jpg', alt: altFor('IMG-20260901-WA0010'), stem: 'IMG-20260901-WA0010' },
-  { src: '/images/IMG-20260901-WA0011.jpg', alt: altFor('IMG-20260901-WA0011'), stem: 'IMG-20260901-WA0011' },
-  { src: '/images/IMG-20260901-WA0012.jpg', alt: altFor('IMG-20260901-WA0012'), stem: 'IMG-20260901-WA0012' },
-  { src: '/images/IMG-20260901-WA0013.jpg', alt: altFor('IMG-20260901-WA0013'), stem: 'IMG-20260901-WA0013' },
-  { src: '/images/IMG-20260901-WA0014.jpg', alt: altFor('IMG-20260901-WA0014'), stem: 'IMG-20260901-WA0014' },
-  { src: '/images/IMG-20260901-WA0015.jpg', alt: altFor('IMG-20260901-WA0015'), stem: 'IMG-20260901-WA0015' },
-  { src: '/images/IMG-20260901-WA0016.jpg', alt: altFor('IMG-20260901-WA0016'), stem: 'IMG-20260901-WA0016' },
-  { src: '/images/IMG-20260901-WA0017.jpg', alt: altFor('IMG-20260901-WA0017'), stem: 'IMG-20260901-WA0017' },
-  { src: '/images/IMG-20260901-WA0018.jpg', alt: altFor('IMG-20260901-WA0018'), stem: 'IMG-20260901-WA0018' },
-  { src: '/images/IMG-20260901-WA0019.jpg', alt: altFor('IMG-20260901-WA0019'), stem: 'IMG-20260901-WA0019' },
-  { src: '/images/IMG-20260901-WA0020.jpg', alt: altFor('IMG-20260901-WA0020'), stem: 'IMG-20260901-WA0020' },
-  { src: '/images/IMG-20260901-WA0021.jpg', alt: altFor('IMG-20260901-WA0021'), stem: 'IMG-20260901-WA0021' },
-  { src: '/images/IMG-20260901-WA0022.jpg', alt: altFor('IMG-20260901-WA0022'), stem: 'IMG-20260901-WA0022' },
-  { src: '/images/IMG-20260901-WA0023.jpg', alt: altFor('IMG-20260901-WA0023'), stem: 'IMG-20260901-WA0023' },
-  { src: '/images/IMG-20260901-WA0024.jpg', alt: altFor('IMG-20260901-WA0024'), stem: 'IMG-20260901-WA0024' },
-  { src: '/images/IMG-20260901-WA0025.jpg', alt: altFor('IMG-20260901-WA0025'), stem: 'IMG-20260901-WA0025' },
-  { src: '/images/IMG-20260901-WA0026.jpg', alt: altFor('IMG-20260901-WA0026'), stem: 'IMG-20260901-WA0026' },
-  { src: '/images/IMG-20260901-WA0027.jpg', alt: altFor('IMG-20260901-WA0027'), stem: 'IMG-20260901-WA0027' },
-  { src: '/images/IMG-20260901-WA0028.jpg', alt: altFor('IMG-20260901-WA0028'), stem: 'IMG-20260901-WA0028' },
+const IMAGE_STEMS = [
+  'IMG-20260823-WA0114','IMG-20260823-WA0117','IMG-20260823-WA0119','IMG-20260823-WA0120','IMG-20260823-WA0121','IMG-20260823-WA0122','IMG-20260823-WA0123','IMG-20260823-WA0124','IMG-20260823-WA0125','IMG-20260823-WA0126','IMG-20260823-WA0129','IMG-20260823-WA0130','IMG-20260823-WA0131','IMG-20260823-WA0132','IMG-20260823-WA0133','IMG-20260823-WA0135','IMG-20260823-WA0139','IMG-20260823-WA0140','IMG-20260823-WA0141','IMG-20260823-WA0142','IMG-20260823-WA0144','IMG-20260823-WA0145','IMG-20260823-WA0146','IMG-20260823-WA0147','IMG-20260823-WA0148','IMG-20260823-WA0149','IMG-20260823-WA0150','IMG-20260823-WA0151','IMG-20260823-WA0152','IMG-20260823-WA0153','IMG-20260823-WA0154','IMG-20260823-WA0155','IMG-20260823-WA0156','IMG-20260823-WA0157','IMG-20260823-WA0159','IMG-20260823-WA0160','IMG-20260823-WA0161','IMG-20260823-WA0162','IMG-20260823-WA0163','IMG-20260823-WA0165','IMG-20260823-WA0166','IMG-20260823-WA0167','IMG-20260823-WA0168','IMG-20260823-WA0169','IMG-20260823-WA0170','IMG-20260823-WA0171','IMG-20260823-WA0172','IMG-20260823-WA0173','IMG-20260823-WA0174','IMG-20260823-WA0175','IMG-20260823-WA0176','IMG-20260823-WA0178','IMG-20260823-WA0179','IMG-20260823-WA0180','IMG-20260823-WA0181','IMG-20260823-WA0182','IMG-20260823-WA0183','IMG-20260823-WA0184','IMG-20260823-WA0185','IMG-20260823-WA0186','IMG-20260823-WA0187','IMG-20260823-WA0188','IMG-20260823-WA0189','IMG-20260823-WA0192','IMG-20260901-WA0009','IMG-20260901-WA0010','IMG-20260901-WA0011','IMG-20260901-WA0012','IMG-20260901-WA0013','IMG-20260901-WA0014','IMG-20260901-WA0015','IMG-20260901-WA0016','IMG-20260901-WA0017','IMG-20260901-WA0018','IMG-20260901-WA0019','IMG-20260901-WA0020','IMG-20260901-WA0021','IMG-20260901-WA0022','IMG-20260901-WA0023','IMG-20260901-WA0024','IMG-20260901-WA0025','IMG-20260901-WA0026','IMG-20260901-WA0027','IMG-20260901-WA0028',
 ]
+
+export const galleryImages: GalleryImage[] = IMAGE_STEMS.map(stem => ({
+  src: `/images/${stem}.jpg`,
+  webpSrc: `/images/${stem}.webp`,
+  alt: altFor(stem),
+  stem,
+}))
 
 export const galleryVideos: GalleryVideo[] = [
   { src: '/videos/VID-20260823-WA0041.mp4', alt: altFor('VID-20260823-WA0041'), stem: 'VID-20260823-WA0041' },

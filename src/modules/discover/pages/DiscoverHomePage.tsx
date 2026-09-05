@@ -259,13 +259,18 @@ export function DiscoverHomePage() {
         {/* Background photo stack with dark gradient overlay */}
         <div className="hero-photo-stack" aria-hidden>
           {heroGallery.map((img, i) => (
-            <img
-              key={img.src}
-              src={img.src}
-              alt={img.alt}
-              className={`hero-photo-slide${i === heroIndex ? ' is-active' : ''}`}
-              draggable={false}
-            />
+            <picture key={img.src}>
+              <source srcSet={img.webpSrc} type="image/webp" />
+              <img
+                src={img.src}
+                alt={img.alt}
+                className={`hero-photo-slide${i === heroIndex ? ' is-active' : ''}`}
+                draggable={false}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+                fetchPriority={i === 0 ? 'high' : 'low'}
+              />
+            </picture>
           ))}
           <div className="hero-photo-gradient" />
         </div>
@@ -322,7 +327,10 @@ export function DiscoverHomePage() {
         <div className="photo-reel-track">
           {[...photoReel, ...photoReel].map((img, i) => (
             <div key={`${img.src}-${i}`} className="photo-reel-item">
-              <img src={img.src} alt={img.alt} loading="lazy" />
+              <picture>
+                <source srcSet={img.webpSrc} type="image/webp" />
+                <img src={img.src} alt={img.alt} loading="lazy" decoding="async" />
+              </picture>
               <p className="photo-reel-caption">{img.alt}</p>
             </div>
           ))}
@@ -392,7 +400,10 @@ export function DiscoverHomePage() {
                 aria-label={`View ${moment.title} in full screen`}
               >
                 <div className="bento-media">
-                  <img src={moment.src} alt={moment.title} loading="lazy" />
+                  <picture>
+                    <source srcSet={moment.src.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
+                    <img src={moment.src} alt={moment.title} loading="lazy" decoding="async" />
+                  </picture>
                   <div className="bento-scrim" />
                 </div>
                 <div className="bento-content">

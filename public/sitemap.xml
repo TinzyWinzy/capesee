@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Core evergreen pages -->
-  <url><loc>https://www.capesee.com/discover</loc><priority>1.0</priority><changefreq>daily</changefreq></url>
-  <url><loc>https://www.capesee.com/discover/map</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
-  <url><loc>https://www.capesee.com/discover/gallery</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://www.capesee.com/discover/nearby</loc><priority>0.7</priority><changefreq>daily</changefreq></url>
-  <url><loc>https://www.capesee.com/discover/search</loc><priority>0.6</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://www.capesee.com/discover/regions</loc><priority>0.6</priority><changefreq>weekly</changefreq></url>
-  <!-- Cape places — keep synced with DB; static seed for crawler bootstrap -->
-  <url><loc>https://www.capesee.com/discover/places/castle-of-good-hope</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://www.capesee.com/discover/places/kirstenbosch</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://www.capesee.com/discover/places/stellenbosch</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://www.capesee.com/discover/places/hermanus</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
-  <!-- Bookable catalogue -->
-  <url><loc>https://www.capesee.com/book/tours</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://www.capesee.com/book/experiences</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://www.capesee.com/book/stays</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://www.capesee.com/book/transfers</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.capesee.com/book/tours/stellenbosch-wine-experience</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://www.capesee.com/book/tours/cape-peninsula-tour</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://www.capesee.com/book/tours/cape-town-walking-tour</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://www.capesee.com/book/tours/hermanus-whale-watching</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://www.capesee.com/discover</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/discover/map</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/discover/gallery</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/discover/nearby</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/discover/search</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/discover/regions</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/discover/places</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/book</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/book/tours</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/book/experiences</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/book/stays</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/book/transfers</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/discover/places/castle-of-good-hope</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/discover/places/kirstenbosch</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/discover/places/stellenbosch</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/discover/places/hermanus</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.capesee.com/book/tours/stellenbosch-wine-experience</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.capesee.com/book/tours/cape-peninsula-tour</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.capesee.com/book/tours/cape-town-walking-tour</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.capesee.com/book/tours/hermanus-whale-watching</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>
