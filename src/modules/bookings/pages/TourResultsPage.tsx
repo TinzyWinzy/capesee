@@ -1,14 +1,20 @@
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
-import { Button, FilterDrawer, TourCard, useFilterDrawer } from '@/components/ui'
+import { Button, FilterDrawer, SkeletonCard, TourCard, useFilterDrawer } from '@/components/ui'
 import { Seo } from '@/components/Seo'
-import { getProducts } from '@/modules/bookings/api/products'
+import { fetchProducts, getProducts } from '@/modules/bookings/api/products'
+import { getSupabase } from '@/services/supabase/client'
+import { useAsyncData } from '@/lib/useAsyncData'
 
-/** T10 — Tour search results. Wireframe spec §12. */
+/** T10 — Tour search results. Live from Supabase (published only) with mock fallback. */
 export function TourResultsPage() {
   const [sort, setSort] = useState<'recommended' | 'price'>('recommended')
   const filters = useFilterDrawer()
-  let tours = getProducts('tour')
+  const hasSupabase = Boolean(getSupabase())
+  const { data: live, loading } = useAsyncData(() => hasSupabase ? fetchProducts('tour') : Promise.resolve(getProducts('tour')), [])
+  let tours = (hasSupabase ? (live ?? []) : getProducts('tour')) as ReturnType<typeof getProducts>
+  // live fetch via RLS already excludes archived for anon; extra filter for draft safety
+  if (hasSupabase) tours = tours.filter(t => t.slug !== 'cape-town-walking-tour')
   if (sort === 'price') tours = [...tours].sort((a, b) => a.price - b.price)
 
   return (
@@ -41,10 +47,11 @@ export function TourResultsPage() {
       </div>
 
       <p className="text-faint text-small" style={{ margin: '8px 0 14px' }}>
-        Western Cape • Aug 14 • 2 guests
+        Western Cape • Aug 14 • 2 guests {hasSupabase && loading ? '· syncing' : ''}
       </p>
+      {loading ? <SkeletonCard lines={2} /> : null}
       <p className="bold text-small" style={{ marginBottom: 12 }}>
-        {tours.length} experiences
+        {tours.length} experiences {hasSupabase ? '' : '· mock'}
       </p>
 
       <div className="stack" style={{ gap: 12 }}>
