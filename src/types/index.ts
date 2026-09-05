@@ -77,7 +77,7 @@ export interface BookableProduct {
   slug: string
   title: string
   price: number
-  priceUnit: 'person' | 'night' | 'trip'
+  priceUnit: 'person' | 'night' | 'trip' | 'group'
   rating: number
   reviewCount: number
   durationHours?: number
@@ -85,6 +85,7 @@ export interface BookableProduct {
   coverUrl?: string
   pickupIncluded?: boolean
   guideIncluded?: boolean
+  groupSize?: number
 }
 
 export interface CartItem {

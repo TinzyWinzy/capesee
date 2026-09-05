@@ -27,6 +27,8 @@ export function AdminTourEditorPage({ tourId }: { tourId?: string }) {
   const [slug, setSlug] = useState(existing?.slug ?? '')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState(existing ? String(existing.price) : '')
+  const [priceUnit, setPriceUnit] = useState<'person'|'group'>((existing as unknown as { priceUnit?: string })?.priceUnit === 'group' ? 'group' : 'person')
+  const [groupSize, setGroupSize] = useState<string>(String((existing as unknown as { groupSize?: number })?.groupSize ?? 6))
   const [duration, setDuration] = useState(existing?.durationHours ? String(existing.durationHours) : '8')
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [stops, setStops] = useState<ItineraryStop[]>([{ key: stopSeq++, place: '', arrival: '', duration: '' }])
@@ -51,8 +53,10 @@ export function AdminTourEditorPage({ tourId }: { tourId?: string }) {
           title,
           description,
           price: Number(price),
+          price_unit: priceUnit,
+          group_size: priceUnit === 'group' ? Number(groupSize) || 6 : null,
           status: nextStatus === 'published' ? 'published' : 'draft',
-        })
+        } as never)
         if (coverUrl) await updateProduct(tourId as string, { cover_url: coverUrl } as never)
         setStatus('saved')
       } else {
@@ -63,9 +67,10 @@ export function AdminTourEditorPage({ tourId }: { tourId?: string }) {
           price: Number(price),
           product_type: 'tour',
           duration_hours: duration ? Number(duration) : null,
+          price_unit: priceUnit,
+          group_size: priceUnit === 'group' ? Number(groupSize) || 6 : null,
         })
         if (coverUrl) await updateProduct(id, { cover_url: coverUrl } as never)
-        // optionally set status
         if (nextStatus === 'published') await updateProduct(id, { status: 'published' })
         setStatus('saved')
         navigate({ to: '/admin/tours/$tourId', params: { tourId: id } })
@@ -127,17 +132,32 @@ export function AdminTourEditorPage({ tourId }: { tourId?: string }) {
       </Card>
 
       <Card className="stack">
-        <span className="eyebrow">Pricing</span>
+        <span className="eyebrow">Pricing — {priceUnit === 'group' ? 'Private tour (per group)' : 'Per person'}</span>
         <div className="grid-2">
           <label>
-            <span className="label">Adult (ZAR)</span>
-            <input className="input" type="number" placeholder="1250" value={price} onChange={(event) => setPrice(event.target.value)} />
+            <span className="label">Price (ZAR) *</span>
+            <input className="input" type="number" placeholder={priceUnit === 'group' ? '4500' : '1250'} value={price} onChange={(event) => setPrice(event.target.value)} />
           </label>
           <label>
-            <span className="label">Child (ZAR)</span>
-            <input className="input" type="number" placeholder="850" />
+            <span className="label">Price unit *</span>
+            <select className="select" value={priceUnit} onChange={(e) => setPriceUnit(e.target.value as 'person'|'group')}>
+              <option value="person">Per person</option>
+              <option value="group">Per group — private tour</option>
+            </select>
           </label>
         </div>
+        {priceUnit === 'group' ? (
+          <label>
+            <span className="label">Group size (max guests)</span>
+            <input className="input" type="number" min={1} max={30} value={groupSize} onChange={(e) => setGroupSize(e.target.value)} placeholder="6" />
+            <span className="text-faint text-xs">Shown as “R{price || '––'} / group (up to {groupSize || 6})” on the public site.</span>
+          </label>
+        ) : (
+          <label>
+            <span className="label">Child (ZAR) — optional</span>
+            <input className="input" type="number" placeholder="850" />
+          </label>
+        )}
       </Card>
 
       {!isEdit ? (

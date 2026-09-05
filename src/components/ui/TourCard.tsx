@@ -13,8 +13,8 @@ export function TourCard({ tour }: { tour: BookableProduct }) {
             <strong>{tour.title}</strong>
             <RatingDisplay rating={tour.rating} reviewCount={tour.reviewCount} />
           </div>
-          <span className="editorial-card-meta">{tour.durationHours}h guided experience</span>
-          <PriceDisplay amount={tour.price} unit="/person" />
+          <span className="editorial-card-meta">{tour.durationHours}h guided experience {tour.priceUnit === 'group' ? '· private' : ''}</span>
+          <PriceDisplay amount={tour.price} unit={tour.priceUnit === 'group' ? 'group' : tour.priceUnit === 'trip' ? '/trip' : '/person'} groupSize={tour.groupSize} />
         </div>
       </Card>
     </Link>

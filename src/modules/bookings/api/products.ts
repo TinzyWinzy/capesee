@@ -70,6 +70,7 @@ function mapProduct(row: ProductCatalogRow): BookableProduct {
     coverUrl: row.cover_url ?? undefined,
     pickupIncluded: row.pickup_included,
     guideIncluded: row.guide_included,
+    groupSize: (row as unknown as { group_size?: number | null }).group_size ?? undefined,
   }
 }
 
@@ -105,16 +106,16 @@ export async function fetchProductRow(id: string): Promise<Tables<'products'> | 
 
 export async function updateProduct(
   id: string,
-  update: Pick<TablesUpdate<'products'>, 'title' | 'description' | 'price' | 'price_unit' | 'status'>,
+  update: Pick<TablesUpdate<'products'>, 'title' | 'description' | 'price' | 'price_unit' | 'status'> & { cover_url?: string | null; group_size?: number | null },
 ): Promise<void> {
   const supabase = getSupabase()
   if (!supabase) throw new Error('Supabase is required to manage live catalog items.')
 
-  const { error } = await supabase.from('products').update(update).eq('id', id)
+  const { error } = await supabase.from('products').update(update as never).eq('id', id)
   if (error) throw error
 }
 
-export async function createProduct(input: { title: string; slug: string; description: string; price: number; product_type: BookableType; regionSlug?: string; price_unit?: string; duration_hours?: number | null }): Promise<string> {
+export async function createProduct(input: { title: string; slug: string; description: string; price: number; product_type: BookableType; regionSlug?: string; price_unit?: string; duration_hours?: number | null; group_size?: number | null }): Promise<string> {
   const supabase = getSupabase()
   if (!supabase) throw new Error('Supabase required to create products')
   const regionSlug = input.regionSlug ?? 'western-cape'
@@ -132,11 +133,12 @@ export async function createProduct(input: { title: string; slug: string; descri
     region_id: region.id,
     price_unit: input.price_unit ?? (input.product_type === 'stay' ? 'night' : input.product_type === 'transfer' ? 'trip' : 'person'),
     duration_hours: input.duration_hours ?? null,
+    group_size: input.group_size ?? null,
     provider_id: providerId,
     status: 'draft',
-  }).select('id').single()
+  } as never).select('id').single()
   if (error) throw error
-  return data.id
+  return (data as { id: string }).id
 }
 
 export async function uploadProductCover(file: File): Promise<string> {
