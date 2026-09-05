@@ -11,7 +11,7 @@ const config: CapacitorConfig = {
     CapacitorHttp: { enabled: true },
   },
   android: { backgroundColor: '#0b211e' },
-  ios: { contentInset: 'always', backgroundColor: '#f3f0e8' },
+  ios: { contentInset: 'always', backgroundColor: '#f3f0e8', allowsLinkPreview: false, handleApplicationNotifications: false, scrollEnabled: true },
 };
 
 export default config;

@@ -1652,6 +1652,8 @@ p {
 
 @media (max-width: 767px) {
   .desktop-only { display: none !important; }
+  /* iPhone: prevent zoom on focus — iOS zooms <16px inputs */
+  .input, .select, .textarea { font-size: 16px; }
   .admin-shell { grid-template-columns: 1fr; }
   .admin-side { position: relative; height: auto; }
   .map-page-shell { min-height: 560px; }
