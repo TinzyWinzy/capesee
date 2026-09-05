@@ -4,6 +4,7 @@ import { Button, FilterDrawer, useFilterDrawer } from '@/components/ui'
 import { MapSurface } from '@/components/maps/MapSurface'
 import { Seo } from '@/components/Seo'
 import { useMapMarkers, type MapMarkerData } from '@/modules/maps/hooks/useMapMarkers'
+import { useClusteredMarkers } from '@/hooks/useClusteredMarkers'
 import { distanceLabel } from '@/lib/format'
 import { haversineKm, type LatLng } from '@/lib/geo'
 
@@ -21,6 +22,18 @@ const FILTER_CATEGORIES: Record<Exclude<MapFilter, 'All'>, Set<MapMarkerData['ca
 const CLUSTER_ANCHOR: LatLng = { lat: -33.9622, lng: 18.4098 }
 const CLUSTER_RADIUS_KM = 8
 
+const CAPE_BOUNDS_BASE = { lat: -33.9249, lng: 18.4241 }
+function boundsForRadius(center: LatLng, radiusKm: number) {
+  const dLat = radiusKm / 111
+  const dLng = radiusKm / (111 * Math.cos((center.lat * Math.PI) / 180))
+  return { minLat: center.lat - dLat, maxLat: center.lat + dLat, minLng: center.lng - dLng, maxLng: center.lng + dLng }
+}
+function zoomForRadius(radiusKm: number) {
+  if (radiusKm <= 2) return 13
+  if (radiusKm <= 5) return 12
+  return 11
+}
+
 /** T02 — Capesee's primary discovery surface. Markers are pinned to real lat/lng. */
 export function DiscoverMapPage() {
   const markers = useMapMarkers()
@@ -32,6 +45,8 @@ export function DiscoverMapPage() {
   const [locationState, setLocationState] = useState<'idle' | 'locating' | 'located' | 'unavailable'>('idle')
   const [userLocation, setUserLocation] = useState<LatLng | null>(null)
   const [areaLabel, setAreaLabel] = useState('Cape Town bowl')
+  const capeBounds = useMemo(() => boundsForRadius(CAPE_BOUNDS_BASE, radiusKm), [radiusKm])
+  const { isClustered, loading: clusterLoading } = useClusteredMarkers(capeBounds, zoomForRadius(radiusKm))
 
   const visibleMarkers = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
@@ -147,7 +162,7 @@ export function DiscoverMapPage() {
         <aside className="map-results-panel">
           <div className="map-results-header">
             <div>
-              <p className="eyebrow">{areaLabel}</p>
+              <p className="eyebrow">{areaLabel} {isClustered ? '• server-clustered' : ''}{clusterLoading ? ' • syncing' : ''}</p>
               <h1>{visibleMarkers.length} places to explore</h1>
             </div>
             <Link to="/discover/nearby" className="editorial-link">List view →</Link>
