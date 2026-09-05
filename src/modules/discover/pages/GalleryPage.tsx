@@ -73,7 +73,7 @@ export function GalleryPage() {
           <div className="grid-2">
             {galleryVideos.map(v => (
               <div key={v.src} className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                <video src={v.src} controls preload="metadata" style={{ width: '100%', display: 'block' }} />
+                <video src={v.src} controls preload="metadata" poster={v.src.replace('.mp4', '.jpg')} style={{ width: '100%', display: 'block' }} />
                 <p className="text-xs" style={{ padding: 8 }}>{v.alt}</p>
               </div>
             ))}
