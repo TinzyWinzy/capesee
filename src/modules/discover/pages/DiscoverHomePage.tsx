@@ -258,20 +258,29 @@ export function DiscoverHomePage() {
       <section className="discover-hero discover-hero--clean">
         {/* Background photo stack with dark gradient overlay */}
         <div className="hero-photo-stack" aria-hidden>
-          {heroGallery.map((img, i) => (
-            <picture key={img.src}>
-              <source srcSet={img.webpSrc} type="image/webp" />
+          {heroGallery.map((img, i) => {
+            const isLcp = i === 0
+            return (
               <img
-                src={img.src}
+                key={img.src}
+                src={isLcp ? '/images/hero-1280-1280.webp' : img.webpSrc}
+                srcSet={
+                  isLcp
+                    ? '/images/hero-1280-640.webp 640w, /images/hero-800.webp 800w, /images/hero-1280-1280.webp 1280w'
+                    : undefined
+                }
+                sizes={isLcp ? '100vw' : undefined}
                 alt={img.alt}
+                width={isLcp ? 1280 : undefined}
+                height={isLcp ? 960 : undefined}
                 className={`hero-photo-slide${i === heroIndex ? ' is-active' : ''}`}
                 draggable={false}
-                loading={i === 0 ? 'eager' : 'lazy'}
-                decoding="async"
-                fetchPriority={i === 0 ? 'high' : 'low'}
+                loading={isLcp ? 'eager' : 'lazy'}
+                decoding={isLcp ? 'sync' : 'async'}
+                fetchPriority={isLcp ? 'high' : 'low'}
               />
-            </picture>
-          ))}
+            )
+          })}
           <div className="hero-photo-gradient" />
         </div>
 
