@@ -216,7 +216,11 @@ export function DiscoverHomePage() {
     return () => clearInterval(timer)
   }, [])
 
-  // Keyboard navigation & scroll lock for Lightbox
+  const lightboxCloseRef = useRef<HTMLButtonElement>(null)
+  const lightboxPrevRef = useRef<HTMLButtonElement>(null)
+  const lightboxNextRef = useRef<HTMLButtonElement>(null)
+
+  // Keyboard navigation, focus trap & scroll lock for Lightbox
   useEffect(() => {
     if (activeLightboxIndex === null) return
 
@@ -226,12 +230,26 @@ export function DiscoverHomePage() {
         setActiveLightboxIndex((prev) => (prev !== null && prev < FEATURED_MOMENTS.length - 1 ? prev + 1 : 0))
       } else if (e.key === 'ArrowLeft') {
         setActiveLightboxIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : FEATURED_MOMENTS.length - 1))
+      } else if (e.key === 'Tab') {
+        const focusable = [lightboxCloseRef.current, lightboxPrevRef.current, lightboxNextRef.current].filter(Boolean) as HTMLElement[]
+        if (focusable.length === 0) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
       }
     }
 
     const originalOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', handleKeyDown)
+    // focus close on open (AAA)
+    window.setTimeout(() => lightboxCloseRef.current?.focus(), 0)
 
     return () => {
       document.body.style.overflow = originalOverflow
@@ -456,6 +474,7 @@ export function DiscoverHomePage() {
           >
             <div className="moment-lightbox-container" onClick={(e) => e.stopPropagation()}>
               <button
+                ref={lightboxCloseRef}
                 type="button"
                 className="lightbox-btn lightbox-close"
                 onClick={() => setActiveLightboxIndex(null)}
@@ -465,6 +484,7 @@ export function DiscoverHomePage() {
               </button>
 
               <button
+                ref={lightboxPrevRef}
                 type="button"
                 className="lightbox-btn lightbox-prev"
                 onClick={() => setActiveLightboxIndex((prev) => (prev! > 0 ? prev! - 1 : FEATURED_MOMENTS.length - 1))}
@@ -491,6 +511,7 @@ export function DiscoverHomePage() {
               </div>
 
               <button
+                ref={lightboxNextRef}
                 type="button"
                 className="lightbox-btn lightbox-next"
                 onClick={() => setActiveLightboxIndex((prev) => (prev! < FEATURED_MOMENTS.length - 1 ? prev! + 1 : 0))}

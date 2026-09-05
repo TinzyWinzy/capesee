@@ -1,12 +1,13 @@
 import { Link } from '@tanstack/react-router'
 import type { BookableProduct } from '@/types'
 import { Card, PriceDisplay, RatingDisplay } from '.'
+import { ResponsiveImage } from '@/components/ResponsiveImage'
 
 export function TourCard({ tour }: { tour: BookableProduct }) {
   return (
     <Link to="/book/tours/$tourSlug" params={{ tourSlug: tour.slug }}>
       <Card flush className="card-link editorial-card tour-card">
-        <div className="media editorial-card-media">{tour.coverUrl ? <img src={tour.coverUrl} alt={tour.title} /> : <div className="editorial-media-placeholder tour-placeholder"><span>Guided through the Cape</span></div>}</div>
+        <div className="media editorial-card-media">{tour.coverUrl ? <ResponsiveImage src={tour.coverUrl} alt={tour.title} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div className="editorial-media-placeholder tour-placeholder"><span>Guided through the Cape</span></div>}</div>
         <div className="editorial-card-body">
           <div className="editorial-card-heading">
             <strong>{tour.title}</strong>
