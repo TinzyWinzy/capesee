@@ -1508,14 +1508,17 @@ p {
 
 /* ---------- Offline banner ---------- */
 
-.offline-banner {
-  background: var(--color-ink);
-  color: #fff;
+.offline-banner,
+.network-status {
   text-align: center;
   font-size: 13px;
-  padding: 6px;
+  padding: 8px 12px;
   font-weight: 600;
 }
+.offline-banner { background: var(--color-ink); color: #fff; }
+.network-status-offline { background: #f6e2d4; color: #5a2a0a; border-bottom: 1px solid #eccdb7; }
+.network-status-online { background: #ddefe5; color: #0f3d26; border-bottom: 1px solid #bfe0cd; }
+.network-status { display: flex; justify-content: center; gap: 8px; }
 
 /* ---------- Auth layout ---------- */
 

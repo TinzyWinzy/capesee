@@ -1,13 +1,16 @@
 import { Outlet } from '@tanstack/react-router'
-import { useOnline } from '@/hooks/useOnline'
+import { NetworkStatus } from '@/components/NetworkStatus'
 
 export function RootLayout() {
-  const online = useOnline()
-
   return (
     <>
-      {!online ? <div className="offline-banner">You're offline</div> : null}
-      <Outlet />
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:px-3 focus:py-2 focus:rounded">
+        Skip to content
+      </a>
+      <NetworkStatus />
+      <div id="main">
+        <Outlet />
+      </div>
     </>
   )
 }
